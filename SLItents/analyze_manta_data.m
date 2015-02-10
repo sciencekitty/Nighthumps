@@ -6,7 +6,7 @@ clear all
 close all
 
 % folder path where .mat files are kept
-folder = '/Users/sandicalhoun/Documents/MATLAB/';
+folder = '/Users/sandicalhoun/Nighthumps/AnalyzedData';
 % list of file names for manta data
 mantafiles = {'flint.mat'
     'vostok.mat'
@@ -31,6 +31,8 @@ for i = 1:length(mantafiles)
 %     analysis.PAR_norm=interp1(par.SDN, par.PAR_norm, manta.SDN,'linear',0);
 %     analysis.PAR_norm2=interp1(par.SDN, par.PAR_norm2, manta.SDN,'linear',0);
     analysis.PAR=interp1(par.SDN, par.PAR, manta.SDN,'linear',0);
+    
+    
     
 %     %*****smooth data with a low pass filter*****
 %     n1 = 5; % filter order
