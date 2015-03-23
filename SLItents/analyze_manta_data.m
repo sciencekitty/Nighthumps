@@ -32,7 +32,9 @@ for i = 1:length(mantafiles)
 %     analysis.PAR_norm2=interp1(par.SDN, par.PAR_norm2, manta.SDN,'linear',0);
     analysis.PAR=interp1(par.SDN, par.PAR, manta.SDN,'linear',0);
     
-    
+    analysis.intPAR=trapz(analysis.PAR);
+    analysis.intDOXY=trapz(manta.DOXY);
+    analysis.ratio=analysis.intPAR./analysis.intDOXY;
     
 %     %*****smooth data with a low pass filter*****
 %     n1 = 5; % filter order
@@ -69,15 +71,34 @@ for i = 1:length(mantafiles)
 %     saveas(f1, filename, 'png');
 
     
-    f2 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+%     f2 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+%     hold on
+%     area(analysis.SDN, analysis.PAR);
+%     title(island_name(1:end-4));
+%     datetick('x', 'mm/dd HH:MM');
+%     ylabel('PAR [\mumol/m^2/s]');
+%     filename=[island_name(1:end-4),'_PAR_area'];
+%     saveas(f2, filename, 'png');
+    
+    f3 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
     hold on
-    plot(analysis.PAR, manta.DOXY(:,1:6),'LineStyle','none','Marker','.');
     title(island_name(1:end-4));
-    ylabel('Oxygen [\mumol/kg]');
-    xlabel('PAR [\mumol/m^2/s]');
-    legend('1', '2', '3', '4', '5', '6');
-    filename=[island_name(1:end-4),'_DOXYvsPAR_analysis'];
-    saveas(f2, filename, 'png');
+    
+    area(analysis.SDN, analysis.PAR, 'FaceColor', [1,1,0]);
+    area(analysis.SDN, manta.DOXY(:,6), 'FaceColor', [0,0.2,0.2]);
+    area(analysis.SDN, manta.DOXY(:,5), 'FaceColor', [0,0.3,0.3]);
+    area(analysis.SDN, manta.DOXY(:,4), 'FaceColor', [0,0.4,0.4]);
+    area(analysis.SDN, manta.DOXY(:,3), 'FaceColor', [0,0.6,0.6]);
+    area(analysis.SDN, manta.DOXY(:,2), 'FaceColor', [0,0.8,0.8]);
+    area(analysis.SDN, manta.DOXY(:,1), 'FaceColor', [0,1,1]);
+
+%     lowlim=floor(min(min(manta.DOXY)));
+%     ylim([lowlim 220]);
+    datetick('x', 'mm/dd HH:MM');
+%     ylabel('Oxygen [\mumol/kg]');
+    legend('PAR', 'Sensor 6', 'Sensor 5', 'Sensor 4', 'Sensor 3', 'Sensor 2', 'Sensor 1');
+    filename=[island_name(1:end-4),'_areas'];
+    saveas(f3, filename, 'png');
     
     
     f_name = [island_name(1:end-4),'_analysis.mat'];

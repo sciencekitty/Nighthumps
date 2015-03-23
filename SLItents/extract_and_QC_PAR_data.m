@@ -1,6 +1,6 @@
-% extract_and_QC_PAR_data.m
+% extract_and_QC_hobo_data.m
 
-% Extract PAR data from text file, and then QC the data.
+% Extract hobo data from text file, and then QC the data.
 
 
 
@@ -8,7 +8,7 @@ clear all
 close all
 
 % folder path where text files are kept
-folder = '/Users/sandicalhoun/Documents/MATLAB/NLItents/raw_tent_text_files/';
+folder = '/Users/sandicalhoun/Nighthumps/';
 % list of text file names for PAR data
 txtfiles = {'flint_PAR.txt'
     'vostok_PAR.txt'
