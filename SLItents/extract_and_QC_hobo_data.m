@@ -22,7 +22,7 @@ for i = 1:length(txtfiles)
             daterange = [datenum(2013,10,31,5,24,0) datenum(2013,11,2,10,59,0)];
         case 'millennium_hobo.txt'
             daterange = [datenum(2013,11,6,3,12,0) datenum(2013,11,7,13,56,0)];
-        case 'malden_PAR.txt'
+        case 'starbuck_hobo.txt'
             daterange = [datenum(2013,10,26,9,46,0) datenum(2013,10,29,9,31,0)];
     end
     
