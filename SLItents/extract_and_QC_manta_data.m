@@ -16,8 +16,6 @@ txtfiles = {'flint_manta.txt'
     'millenium_manta.txt'
     'starbuck_manta.txt'};
 
-% txtfiles = {'starbuck_manta.txt'};
-
 for i = 1:length(txtfiles)
     island_name = txtfiles{i};
     island_name = island_name(1:end-10);
