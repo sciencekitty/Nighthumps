@@ -145,23 +145,6 @@ for i = 1:length(txtfiles)
     filename = ['DOXYmeans_',island_name,'.txt'];
     
     save(filename,'means','-ascii','-tabs');
-
-%     
-% %     manta = trex;
-%     figure
-%     plot(manta.SDN(2:end), manta.dDOXY_lpf);
-%     title(txtfiles{i});
-%     ylabel('Derivative of DOXY filtered');
-% %     ylim([150 220]);
-%     datetick('x', 'mm/dd');
-% %     pause
-% % 
-% %     figure
-% %     plot(manta.SDN, manta.DOXY_runavg);
-% %     title(txtfiles{i});
-% %     ylabel('Oxygen running average');
-% % %     ylim([150 220]);
-% %     datetick('x', 'mm/dd');
    
     plotvar = 'dDOXY_lpf';
     
@@ -203,18 +186,7 @@ for i = 1:length(txtfiles)
     
     plotname = [island_name,'_',plotvar,'.png'];
     saveas(f2, plotname);
-    
-% 
-%     figure
-%     plot(manta.SDN, manta.DOXY_lpf);
-%     title(txtfiles{i});
-%     ylabel('Filtered Oxygen');
-% %     ylim([150 220]);
-%     datetick('x', 'mm/dd');
-%     
-%     pause
-    
-    %now find peaks in derivative plot.
+
  
     f_name = [island_name,'.mat'];
     

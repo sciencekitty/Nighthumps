@@ -35,25 +35,33 @@ for i = 1:length(mantafiles)
     analysis.PAR=par.PAR(iuse&isnonan,:);
     
     % Shift DO to zero baseline 
-    analysis.index=[1:length(analysis.PAR)]';
-    mins=min(analysis.DOXY);
-    for ii=1:length(mins)
-        analysis.DOXYbase(:,ii)=analysis.DOXY(:,ii)-mins(ii);
+    analysis.hrs=[1:length(analysis.PAR)]'*5/60;
+    analysis.secs=[1:length(analysis.PAR)]'*5*60;
+    base=min(analysis.DOXY);
+    for ii=1:length(base)
+        analysis.DOXYbase(:,ii)=analysis.DOXY(:,ii)-base(ii);
     end
     
-%     plotname=[name,'DOXYanalysis.png'];
-%     plotDOXYdata(analysis.index, analysis.DOXYbase, name, plotname);
-%     plotname=[name,'PARanalysis.png'];
-%     plotPARdata(analysis.index, analysis.PAR, name, plotname);
+    plotPARdata(analysis.hrs,analysis.PAR,name,'test.png');
+    plotDOXYdata(analysis.hrs,analysis.DOXYbase,name,'test2.png');
     
-    analysis.intPAR=trapz(analysis.PAR);
-    analysis.intDOXY=trapz(analysis.DOXYbase);
+    % Calculate the integrated PAR and DO values for each sensor. Units are
+    % umol*s/kg for DOXY and umol/m^2 for PAR. Integral length is converted
+    % to seconds to normalize time units.
+    analysis.intPAR=trapz(analysis.secs,analysis.PAR);
+    analysis.intDOXY=trapz(analysis.secs,analysis.DOXYbase);
+    
+    % Calculate the ratio of umol PAR absorbed to umol oxygen
+    % released. Future analyses could compare benthic cover to this ratio.
+    % Units are kg per sqare meter per second.
     analysis.ratio=analysis.intPAR./analysis.intDOXY;
    
+    % Plot examples of intergrated areas.
     f1 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
     hold on
-    area(analysis.index, analysis.PAR);
+    area(analysis.hrs, analysis.PAR);
     title(name);
+    xlabel('Hours');
     ylabel('PAR [\mumol photons m^-^2 s^-^1]');
     filename=[name,'_PAR_area'];
     saveas(f1, filename, 'png');
@@ -62,18 +70,39 @@ for i = 1:length(mantafiles)
     hold on
     title(name);
     
-    area(analysis.index, analysis.DOXYbase(:,6), 'FaceColor', [0,0.2,0.2]);
-    area(analysis.index, analysis.DOXYbase(:,5), 'FaceColor', [0,0.3,0.3]);
-    area(analysis.index, analysis.DOXYbase(:,4), 'FaceColor', [0,0.4,0.4]);
-    area(analysis.index, analysis.DOXYbase(:,3), 'FaceColor', [0,0.6,0.6]);
-    area(analysis.index, analysis.DOXYbase(:,2), 'FaceColor', [0,0.8,0.8]);
-    area(analysis.index, analysis.DOXYbase(:,1), 'FaceColor', [0,1,1]);
+    area(analysis.hrs, analysis.DOXYbase(:,6), 'FaceColor', [0,0.2,0.2]);
+    area(analysis.hrs, analysis.DOXYbase(:,5), 'FaceColor', [0,0.3,0.3]);
+    area(analysis.hrs, analysis.DOXYbase(:,4), 'FaceColor', [0,0.4,0.4]);
+    area(analysis.hrs, analysis.DOXYbase(:,3), 'FaceColor', [0,0.6,0.6]);
+    area(analysis.hrs, analysis.DOXYbase(:,2), 'FaceColor', [0,0.8,0.8]);
+    area(analysis.hrs, analysis.DOXYbase(:,1), 'FaceColor', [0,1,1]);
 
     ylabel('Oxygen [\mumol kg^-^1]');
+    xlabel('Hours');
     legend('Sensor 6', 'Sensor 5', 'Sensor 4', 'Sensor 3', 'Sensor 2', 'Sensor 1');
     filename=[name,'_DOXY_areas'];
     saveas(f2, filename, 'png');
     
+%     f3 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+%     hold on
+%     title(name);
+%     
+%     [ax,p1,s1]=plotyy(analysis.index, analysis.PAR, analysis.index, analysis.DOXYbase(:,6),...
+%         'area', 'area');
+%     p1.FaceColor=[1,1,0];
+%     s1.FaceColor=[0,0.2,0.2];
+%     s1.FaceAlpha=0.5;
+% %     area(analysis.index, analysis.DOXYbase(:,6), 'FaceColor', [0,0.2,0.2]);
+%     area(analysis.index, analysis.DOXYbase(:,5), 'FaceColor', [0,0.3,0.3]);
+%     area(analysis.index, analysis.DOXYbase(:,4), 'FaceColor', [0,0.4,0.4]);
+%     area(analysis.index, analysis.DOXYbase(:,3), 'FaceColor', [0,0.6,0.6]);
+%     area(analysis.index, analysis.DOXYbase(:,2), 'FaceColor', [0,0.8,0.8]);
+%     area(analysis.index, analysis.DOXYbase(:,1), 'FaceColor', [0,1,1]);
+% 
+%     legend('PAR', 'Sensor 6', 'Sensor 5', 'Sensor 4', 'Sensor 3', 'Sensor 2', 'Sensor 1');
+%     filename=[name,'_DOXY-PAR_areas'];
+%     saveas(f3, filename, 'png');
+%     
     f_name = [name,'_analysis.mat'];
     
     save(f_name, 'analysis', 'name');

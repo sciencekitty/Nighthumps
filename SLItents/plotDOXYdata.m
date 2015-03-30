@@ -1,7 +1,7 @@
 function [] = plotDOXYdata(SDN, DOXY, island_name, plotname)
 %Plots and saves an image of manta DOXY data
 
-    fsize = 25;
+    fsize = 10;
     lwidth = 2;
 
 
@@ -10,7 +10,7 @@ function [] = plotDOXYdata(SDN, DOXY, island_name, plotname)
     title(island_name, 'fontsize', fsize);
     ylabel('Oxygen [\mumol/kg]', 'fontsize', fsize);
     % ylim([ymin ymax]);
-    datetick('x', 'mm/dd');
+%     datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6');
     set(gca, 'fontsize', fsize);
     
