@@ -8,13 +8,18 @@ clear all
 close all
 
 % folder path where text files are kept
-folder = '/Users/sandicalhoun/Nighthumps/';
+folder = '/Users/sandicalhoun/Nighthumps/SLItents/raw_tent_text_files/';
 % list of text file names for PAR data
 txtfiles = {'flint_PAR.txt'
     'vostok_PAR.txt'
     'malden_PAR.txt'
     'millennium_PAR.txt'
-    'starbuck_PAR.txt'};
+    'starbuck_PAR.txt'
+    'fanning_PAR.txt'
+    'jarvis_PAR.txt'
+    'kingman_PAR.txt'
+    'palmyra_PAR.txt'
+    'washington_PAR.txt'};
 
 
 for i = 1:length(txtfiles)
@@ -31,6 +36,16 @@ for i = 1:length(txtfiles)
             daterange = [datenum(2013,11,6,3,10,0) datenum(2013,11,7,13,50,0)];
         case 'starbuck_PAR.txt'
             daterange = [datenum(2013,10,26,9,45,0) datenum(2013,10,29,9,30,0)];
+        case 'fanning_PAR.txt'
+            daterange = [datenum(2010,11,4,8,0,0) datenum(2010,11,7,11,45,0)];
+        case 'jarvis_PAR.txt'
+            daterange = [datenum(2010,11,12,11,0,0) datenum(2010,11,14,14,55,0)];
+        case 'kingman_PAR.txt'
+            daterange = [datenum(2010,10,30,15,55,0) datenum(2010,11,1,14,45,0)];
+        case 'palmyra_PAR.txt'
+            daterange = [datenum(2010,10,25,15,0,0) datenum(2010,10,28,10,25,0)];
+        case 'washington_PAR.txt'
+            daterange = [datenum(2010,11,8,11,0,0) datenum(2010,11,10,10,45,0)];
     end
     
     filepath = [folder,txtfiles{i}];
@@ -55,19 +70,18 @@ for i = 1:length(txtfiles)
     [b,a] = butter(n,Wn);
 
 
-    par.PAR_lpf(:,1) = filtfilt(b, a, par.PAR(:,1));
+    par.PAR_lpf = filtfilt(b, a, par.PAR);
 
-    par.PAR_runavg(:,1) = runmean(par.PAR(:,1),3);
+    par.PAR_runavg = runmean(par.PAR,3);
     % take derivative.
-    par.dPAR_lpf(:,1) = diff(par.PAR_lpf(:,1));
+    par.dPAR_lpf = diff(par.PAR_lpf);
     % recored peak heights of dDOXY.
-    PARmax = findpeaks(par.PAR_lpf(:,1),'MinPeakDistance',datenum(0,0,0,6,0,0));
-    means = mean(PARmax);
+    PARmax = findpeaks(par.PAR_lpf,'MinPeakDistance',datenum(0,0,0,6,0,0));
+    means = mean(par.PAR);
+    stdevs = std(par.PAR);
     peaksPAR.(island_name(1:end-4)).PARmax = PARmax;
     peaksPAR.(island_name(1:end-4)).means = means;
-    filename = ['PARmean_',island_name(1:end-4),'.txt'];
-    
-    save(filename,'means','-ascii');
+    peaksPAR.(island_name(1:end-4)).stdevs = stdevs;
     
     % normalize PAR data by two methods
     base = mean(par.PAR);
@@ -77,30 +91,30 @@ for i = 1:length(txtfiles)
     par.PAR_norm2=(par.PAR-base)/stdev;
    
   
-plotvar = 'PAR_lpf';
+% plotvar = 'PAR_lpf';
+%     
+%     fsize = 10;
+%     lwidth = 2;
+% 
+% 
+%     f1 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+%     hold on
+%     plot(par.SDN(1:end), par.(plotvar), 'linewidth', lwidth);
+% %     plot(manta.SDN(dDOXYmax_locs{1}), dDOXYmax{1},'rv','MarkerFaceColor','r');
+% %     plot(manta.SDN(dDOXYmin_locs{1}), dDOXYmin{1},'rs','MarkerFaceColor','b');
+%     title(island_name(1:end-4), 'fontsize', fsize);
+%     ylabel('LPF PAR [\mumol cm^-^2 s^-^1]', 'fontsize', fsize);
+% %     ylim([150 220]);
+% %     ylim([-2.0 2.0]);
+%     datetick('x', 'HH:MM');
+% %     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
+%     set(gca, 'fontsize', fsize);
+%     
+%     plotname = [island_name(1:end-4),'_',plotvar,'.png'];
+%     saveas(f1, plotname);
+%     %movefile(plotname, 'plots', 'f');
     
-    fsize = 25;
-    lwidth = 2;
-
-
-    f1 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
-    hold on
-    plot(par.SDN(1:end), par.(plotvar), 'linewidth', lwidth);
-%     plot(manta.SDN(dDOXYmax_locs{1}), dDOXYmax{1},'rv','MarkerFaceColor','r');
-%     plot(manta.SDN(dDOXYmin_locs{1}), dDOXYmin{1},'rs','MarkerFaceColor','b');
-    title(island_name(1:end-4), 'fontsize', fsize);
-    ylabel('LPF PAR [\mumol/m^2/s]', 'fontsize', fsize);
-%     ylim([150 220]);
-%     ylim([-2.0 2.0]);
-    datetick('x', 'mm/dd');
-%     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
-    set(gca, 'fontsize', fsize);
-    
-    plotname = [island_name(1:end-4),'_',plotvar,'.png'];
-    saveas(f1, plotname);
-    %movefile(plotname, 'plots', 'f');
-    
-    plotvar = 'dPAR_lpf';
+%     plotvar = 'dPAR_lpf';
     
 %     f2 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
 %     hold on

@@ -8,13 +8,19 @@ clear all
 close all
 
 % folder path where text files are kept
-folder = '/Users/sandicalhoun/Documents/MATLAB/NLItents/raw_tent_text_files/';
+folder = '/Users/sandicalhoun/Nighthumps/SLItents/raw_tent_text_files/';
 % list of text file names for manta data
 txtfiles = {'flint_manta.txt'
     'vostok_manta.txt'
     'malden_manta.txt'
-    'millenium_manta.txt'
-    'starbuck_manta.txt'};
+    'millennium_manta.txt'
+    'starbuck_manta.txt'
+    'fanning_manta.txt'
+    'jarvis_manta.txt'
+    'kingman_manta.txt'
+    'kiritimati_manta.txt'
+    'palmyra_manta.txt'
+    'washington_manta.txt'};
 
 for i = 1:length(txtfiles)
     island_name = txtfiles{i};
@@ -26,10 +32,22 @@ for i = 1:length(txtfiles)
             daterange = [datenum(2013,10,22,8,0,0) datenum(2013,10,24,11,15,0)];
         case 'malden_manta.txt'
             daterange = [datenum(2013,10,30,10,0,0) datenum(2013,11,2,8,0,0)];
-        case 'millenium_manta.txt'
+        case 'millennium_manta.txt'
             daterange = [datenum(2013,11,5,10,0,0) datenum(2013,11,8,9,30,0)];
         case 'starbuck_manta.txt'
             daterange = [datenum(2013,10,26,10,30,0) datenum(2013,10,29,9,0,0)];
+        case 'fanning_manta.txt'
+            daterange = [datenum(2010,11,4,10,0,0) datenum(2010,11,7,13,55,0)];
+        case 'jarvis_manta.txt'
+            daterange = [datenum(2010,11,12,10,30,0) datenum(2010,11,14,15,0,0)];
+        case 'kingman_manta.txt'
+            daterange = [datenum(2010,10,30,10,40,0) datenum(2010,11,2,12,20,0)];
+        case 'kiritimati_manta.txt'
+            daterange = [datenum(2010,11,20,11,5,0) datenum(2010,11,21,11,5,0)];
+        case 'palmyra_manta.txt'
+            daterange = [datenum(2010,10,25,14,0,0) datenum(2010,10,28,13,15,0)];
+        case 'washington_manta.txt'
+            daterange = [datenum(2010,11,8,10,45,0) datenum(2010,11,10,12,45,0)];
     end
     
     
@@ -53,7 +71,7 @@ for i = 1:length(txtfiles)
     
     % Make 20th O2satper 100%, arbitrarily.
     O2per_offset = 100 - trex.O2satper(20,:);
-    for ii = 1:8
+    for ii = 1:6
         trex.O2satper(:,ii) = trex.O2satper(:,ii) + O2per_offset(ii);
         trex.DOXY(:,ii) = calcO2sat(trex.TC(:,ii),trex.PSAL(:,ii)).*trex.O2satper(:,ii)./100;   
     end
@@ -65,7 +83,6 @@ for i = 1:length(txtfiles)
     
     % presize stats matrices. Means are daily means for sensors 1-6 (columns) across 
     % DOXYmax, DOXYmin, dDOXYmax, and dDOXYmin (rows).
-    means = NaN(4,6);
     
     DOXYmax = {1,6};
     DOXYmax_locs = {1,6};
@@ -75,6 +92,8 @@ for i = 1:length(txtfiles)
     dDOXYmax_locs = {1,6};
     dDOXYmin = {1,6};
     dDOXYmin_locs = {1,6};
+    means = zeros(1,6);
+    stdevs = zeros(1,6);
 
     
     for ii = 1:6
@@ -107,27 +126,26 @@ for i = 1:length(txtfiles)
             'MinPeakProminence', 1.0);
         DOXYmax{1,ii} = steg;
         DOXYmax_locs{1,ii} = locs;
-        means(1,ii) = mean(DOXYmax{1,ii});
         
         mins = -manta.DOXY_lpf(:,ii);
         [steg, locs] = findpeaks(mins,'MinPeakDistance',datenum(0,0,0,6,0,0),...
             'MinPeakProminence', 1.0);
         DOXYmin{1,ii} = -steg;
         DOXYmin_locs{1,ii} = locs;
-        means(2,ii) = mean(DOXYmin{1,ii});
         
         [steg, locs] = findpeaks(manta.dDOXY_lpf(:,ii),'MinPeakDistance',datenum(0,0,0,6,0,0),...
             'MinPeakProminence', 0.05);
         dDOXYmax{1,ii} = steg;
         dDOXYmax_locs{1,ii} = locs;
-        means(3,ii) = mean(dDOXYmax{1,ii});
         
         mins = -manta.dDOXY_lpf(:,ii);
         [steg, locs] = findpeaks(mins,'MinPeakDistance',datenum(0,0,0,6,0,0),...
             'MinPeakProminence', 0.05);
         dDOXYmin{1,ii} = -steg; 
         dDOXYmin_locs{1,ii} = locs;
-        means(4,ii) = mean(dDOXYmin{1,ii});
+        
+        means(:,ii) = mean(manta.DOXY(:,ii));
+        stdevs(:,ii) = std(manta.DOXY(:,ii));
             
         
     end
@@ -141,14 +159,12 @@ for i = 1:length(txtfiles)
     peaks.(island_name).('dDOXYmax_locs') = (dDOXYmax_locs);
     peaks.(island_name).('dDOXYmin_locs') = (dDOXYmin_locs);
     peaks.(island_name).('means') = (means);
-    
-    filename = ['DOXYmeans_',island_name,'.txt'];
-    
-    save(filename,'means','-ascii','-tabs');
+    peaks.(island_name).('stdevs') = (stdevs);
+
    
     plotvar = 'dDOXY_lpf';
     
-    fsize = 25;
+    fsize = 10;
     lwidth = 2;
 
 
@@ -158,10 +174,10 @@ for i = 1:length(txtfiles)
     plot(manta.SDN(dDOXYmax_locs{1}), dDOXYmax{1},'rv','MarkerFaceColor','r');
     plot(manta.SDN(dDOXYmin_locs{1}), dDOXYmin{1},'rs','MarkerFaceColor','b');
     title(island_name, 'fontsize', fsize);
-    ylabel('Derivative LPF Oxygen [\mumol/kg]', 'fontsize', fsize);
+    ylabel('Derivative LPF Oxygen [\mumol kg^-^1 min^-^1]', 'fontsize', fsize);
 %     ylim([150 220]);
     ylim([-2.0 2.0]);
-    datetick('x', 'mm/dd');
+    datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
     set(gca, 'fontsize', fsize);
     
@@ -177,10 +193,10 @@ for i = 1:length(txtfiles)
     plot(manta.SDN(DOXYmax_locs{1}), DOXYmax{1},'rv','MarkerFaceColor','r');
     plot(manta.SDN(DOXYmin_locs{1}), DOXYmin{1},'rs','MarkerFaceColor','b');
     title(island_name, 'fontsize', fsize);
-    ylabel('LPF Oxygen [\mumol/kg]', 'fontsize', fsize);
+    ylabel('LPF Oxygen [\mumol kg^-^1]', 'fontsize', fsize);
     ylim([140 220]);
 %     ylim([-0.6 0.6]);
-    datetick('x', 'mm/dd');
+    datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6', 'peaks', 'troughs','Location','eastoutside');
     set(gca, 'fontsize', fsize);
     

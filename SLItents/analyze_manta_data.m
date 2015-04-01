@@ -11,18 +11,28 @@ folder = '/Users/sandicalhoun/Nighthumps/AnalyzedData';
 mantafiles = {'flint.mat'
     'vostok.mat'
     'malden.mat'
-    'millenium.mat'
-    'starbuck.mat'};
+    'millennium.mat'
+    'starbuck.mat'
+    'fanning.mat'
+    'jarvis.mat'
+    'kingman.mat'
+    'palmyra.mat'
+    'washington.mat'};
 % list of file names for PAR data
 parfiles = {'flint_PAR.mat'
     'vostok_PAR.mat'
     'malden_PAR.mat'
     'millennium_PAR.mat'
-    'starbuck_PAR.mat'};
+    'starbuck_PAR.mat'
+    'fanning_PAR.mat'
+    'jarvis_PAR.mat'
+    'kingman_PAR.mat'
+    'palmyra_PAR.mat'
+    'washington_PAR.mat'};
 
 for i = 1:length(mantafiles)
-    name = mantafiles{i};
-    name = name(1:end-4);
+    name = parfiles{i};
+    name = name(1:end-8);
     load(mantafiles{i});
     load(parfiles{i});
     
@@ -42,8 +52,10 @@ for i = 1:length(mantafiles)
         analysis.DOXYbase(:,ii)=analysis.DOXY(:,ii)-base(ii);
     end
     
-    plotPARdata(analysis.hrs,analysis.PAR,name,'test.png');
-    plotDOXYdata(analysis.hrs,analysis.DOXYbase,name,'test2.png');
+    imagename=[name,'_PAR.png'];
+    plotPARdata(par.SDN,par.PAR,name,imagename);
+    imagename=[name,'_DOXY.png'];
+    plotDOXYdata(manta.SDN,manta.DOXY,name,imagename);
     
     % Calculate the integrated PAR and DO values for each sensor. Units are
     % umol*s/kg for DOXY and umol/m^2 for PAR. Integral length is converted
@@ -55,54 +67,34 @@ for i = 1:length(mantafiles)
     % released. Future analyses could compare benthic cover to this ratio.
     % Units are kg per sqare meter per second.
     analysis.ratio=analysis.intPAR./analysis.intDOXY;
+    
+    % Plot PAR and DOXY overlaid
+   f1 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+   hold on
+   [Ax,PAR,DOXY]=plotyy(analysis.hrs,analysis.PAR, [analysis.hrs,analysis.hrs,analysis.hrs,analysis.hrs,...
+       analysis.hrs,analysis.hrs], [analysis.DOXYbase(:,1),analysis.DOXYbase(:,2),analysis.DOXYbase(:,3),...
+       analysis.DOXYbase(:,4),analysis.DOXYbase(:,5),analysis.DOXYbase(:,6)], 'area', 'plot');
+   title(name);
+   xlabel('Hours');
+   ylabel(Ax(1), 'PAR [\mumol photons m^-^2 s^-^1]');
+   ylabel(Ax(2), 'Oxygen [\mumol kg^-^1]');
+   ylim(Ax(1), [0, 1400]);
+   ylim(Ax(2),[0 70]);
    
-    % Plot examples of intergrated areas.
-    f1 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
-    hold on
-    area(analysis.hrs, analysis.PAR);
-    title(name);
-    xlabel('Hours');
-    ylabel('PAR [\mumol photons m^-^2 s^-^1]');
-    filename=[name,'_PAR_area'];
-    saveas(f1, filename, 'png');
-    
-    f2 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
-    hold on
-    title(name);
-    
-    area(analysis.hrs, analysis.DOXYbase(:,6), 'FaceColor', [0,0.2,0.2]);
-    area(analysis.hrs, analysis.DOXYbase(:,5), 'FaceColor', [0,0.3,0.3]);
-    area(analysis.hrs, analysis.DOXYbase(:,4), 'FaceColor', [0,0.4,0.4]);
-    area(analysis.hrs, analysis.DOXYbase(:,3), 'FaceColor', [0,0.6,0.6]);
-    area(analysis.hrs, analysis.DOXYbase(:,2), 'FaceColor', [0,0.8,0.8]);
-    area(analysis.hrs, analysis.DOXYbase(:,1), 'FaceColor', [0,1,1]);
+   legend('PAR', 'Sensor 1', 'Sensor 2', 'Sensor 3', 'Sensor 4', 'Sensor 5', 'Sensor 6');
+   filename=[name,'_DOXY-PAR_overlay.png'];
+   saveas(f1, filename, 'png');
+   
+   % Plot PAR to oxygen ratios
+   f2 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+   hold on
+   bar(analysis.ratio);
+   xlabel('Sensor');
+   ylabel('\mumol Photons Absorbed [m^-^2] to Produce 1.0 \mumol Oxygen [kg^-^1]');
+   title(name);
+   filename=[name,'_PAR:DOXY.png'];
+   saveas(f2, filename, 'png');
 
-    ylabel('Oxygen [\mumol kg^-^1]');
-    xlabel('Hours');
-    legend('Sensor 6', 'Sensor 5', 'Sensor 4', 'Sensor 3', 'Sensor 2', 'Sensor 1');
-    filename=[name,'_DOXY_areas'];
-    saveas(f2, filename, 'png');
-    
-%     f3 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
-%     hold on
-%     title(name);
-%     
-%     [ax,p1,s1]=plotyy(analysis.index, analysis.PAR, analysis.index, analysis.DOXYbase(:,6),...
-%         'area', 'area');
-%     p1.FaceColor=[1,1,0];
-%     s1.FaceColor=[0,0.2,0.2];
-%     s1.FaceAlpha=0.5;
-% %     area(analysis.index, analysis.DOXYbase(:,6), 'FaceColor', [0,0.2,0.2]);
-%     area(analysis.index, analysis.DOXYbase(:,5), 'FaceColor', [0,0.3,0.3]);
-%     area(analysis.index, analysis.DOXYbase(:,4), 'FaceColor', [0,0.4,0.4]);
-%     area(analysis.index, analysis.DOXYbase(:,3), 'FaceColor', [0,0.6,0.6]);
-%     area(analysis.index, analysis.DOXYbase(:,2), 'FaceColor', [0,0.8,0.8]);
-%     area(analysis.index, analysis.DOXYbase(:,1), 'FaceColor', [0,1,1]);
-% 
-%     legend('PAR', 'Sensor 6', 'Sensor 5', 'Sensor 4', 'Sensor 3', 'Sensor 2', 'Sensor 1');
-%     filename=[name,'_DOXY-PAR_areas'];
-%     saveas(f3, filename, 'png');
-%     
     f_name = [name,'_analysis.mat'];
     
     save(f_name, 'analysis', 'name');

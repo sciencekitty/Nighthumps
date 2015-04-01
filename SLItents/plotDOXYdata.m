@@ -9,8 +9,8 @@ function [] = plotDOXYdata(SDN, DOXY, island_name, plotname)
     plot(SDN, DOXY, 'linewidth', lwidth);
     title(island_name, 'fontsize', fsize);
     ylabel('Oxygen [\mumol/kg]', 'fontsize', fsize);
-    % ylim([ymin ymax]);
-%     datetick('x', 'HH:MM');
+    ylim([140 220]);
+    datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6');
     set(gca, 'fontsize', fsize);
     
