@@ -52,11 +52,18 @@ for i = 1:length(txtfiles)
     
     
     trex = manta2mat([folder,txtfiles{i}]);
-    trex.DOXY = trex.O2;
     
     % Oxygen has 0s in there randomly. change it all to NaNs
+    trex.DOXY = trex.O2;
     trex.DOXY(trex.DOXY == 0) = NaN;
     trex.O2satper(trex.O2satper == 0) = NaN;
+    
+    % Adjust percent saturation to set the mean for each sensor to the mean
+    % of sensors 1-6 for the first 30 min.
+    baseline = nanmean(nanmean(trex.O2satper(1:6,1:6)));
+    adj = baseline - nanmean(trex.O2satper,1);
+    trex.O2satper = bsxfun(@plus,trex.O2satper,adj);
+    baselinesat=nanmean(trex.O2satper,1);
     
     % Calculate salinity from conductivity [uS/cm].
     trex.PSAL = SP_from_C(trex.COND/10000, trex.TC, 10);
@@ -72,7 +79,7 @@ for i = 1:length(txtfiles)
     % Make 20th O2satper 100%, arbitrarily.
     O2per_offset = 100 - trex.O2satper(20,:);
     for ii = 1:6
-        trex.O2satper(:,ii) = trex.O2satper(:,ii) + O2per_offset(ii);
+        %trex.O2satper(:,ii) = trex.O2satper(:,ii) + O2per_offset(ii);
         trex.DOXY(:,ii) = calcO2sat(trex.TC(:,ii),trex.PSAL(:,ii)).*trex.O2satper(:,ii)./100;   
     end
     
@@ -84,14 +91,14 @@ for i = 1:length(txtfiles)
     % presize stats matrices. Means are daily means for sensors 1-6 (columns) across 
     % DOXYmax, DOXYmin, dDOXYmax, and dDOXYmin (rows).
     
-    DOXYmax = {1,6};
-    DOXYmax_locs = {1,6};
-    DOXYmin = {1,6};
-    DOXYmin_locs = {1,6};
-    dDOXYmax = {1,6};
-    dDOXYmax_locs = {1,6};
-    dDOXYmin = {1,6};
-    dDOXYmin_locs = {1,6};
+    DOXYmax = NaN(4,6);
+    DOXYmax_locs = NaN(4,6);
+    DOXYmin = NaN(4,6);
+    DOXYmin_locs = NaN(4,6);
+    dDOXYmax = NaN(4,6);
+    dDOXYmax_locs = NaN(4,6);
+    dDOXYmin = NaN(4,6);
+    dDOXYmin_locs = NaN(4,6);
     means = zeros(1,6);
     stdevs = zeros(1,6);
 
@@ -124,25 +131,37 @@ for i = 1:length(txtfiles)
         % recored local maxima and minima of DOXY and dDOXY.
         [steg, locs] = findpeaks(manta.DOXY_lpf(:,ii),'MinPeakDistance',datenum(0,0,0,6,0,0),...
             'MinPeakProminence', 1.0);
-        DOXYmax{1,ii} = steg;
-        DOXYmax_locs{1,ii} = locs;
+        for iii=1:length(locs)
+            locs(iii)=manta.SDN(locs(iii));
+        end
+        DOXYmax(1:length(steg),ii) = steg;
+        DOXYmax_locs(1:length(locs),ii) = locs;
         
         mins = -manta.DOXY_lpf(:,ii);
         [steg, locs] = findpeaks(mins,'MinPeakDistance',datenum(0,0,0,6,0,0),...
             'MinPeakProminence', 1.0);
-        DOXYmin{1,ii} = -steg;
-        DOXYmin_locs{1,ii} = locs;
+        for iii=1:length(locs)
+            locs(iii)=manta.SDN(locs(iii));
+        end
+        DOXYmin(1:length(steg),ii) = -steg;
+        DOXYmin_locs(1:length(locs),ii) = locs;
         
         [steg, locs] = findpeaks(manta.dDOXY_lpf(:,ii),'MinPeakDistance',datenum(0,0,0,6,0,0),...
             'MinPeakProminence', 0.05);
-        dDOXYmax{1,ii} = steg;
-        dDOXYmax_locs{1,ii} = locs;
+        for iii=1:length(locs)
+            locs(iii)=manta.SDN(locs(iii));
+        end
+        dDOXYmax(1:length(steg),ii) = steg;
+        dDOXYmax_locs(1:length(locs),ii) = locs;
         
         mins = -manta.dDOXY_lpf(:,ii);
         [steg, locs] = findpeaks(mins,'MinPeakDistance',datenum(0,0,0,6,0,0),...
             'MinPeakProminence', 0.05);
-        dDOXYmin{1,ii} = -steg; 
-        dDOXYmin_locs{1,ii} = locs;
+        for iii=1:length(locs)
+            locs(iii)=manta.SDN(locs(iii));
+        end
+        dDOXYmin(1:length(steg),ii) = -steg; 
+        dDOXYmin_locs(1:length(locs),ii) = locs;
         
         means(:,ii) = mean(manta.DOXY(:,ii));
         stdevs(:,ii) = std(manta.DOXY(:,ii));
@@ -171,8 +190,8 @@ for i = 1:length(txtfiles)
     f1 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
     hold on
     plot(manta.SDN(2:end), manta.(plotvar)(:,1:6), 'linewidth', lwidth);
-    plot(manta.SDN(dDOXYmax_locs{1}), dDOXYmax{1},'rv','MarkerFaceColor','r');
-    plot(manta.SDN(dDOXYmin_locs{1}), dDOXYmin{1},'rs','MarkerFaceColor','b');
+    plot(dDOXYmax_locs(:), dDOXYmax(:),'rv','MarkerFaceColor','r');
+    plot(dDOXYmin_locs(:), dDOXYmin(:),'rs','MarkerFaceColor','b');
     title(island_name, 'fontsize', fsize);
     ylabel('Derivative LPF Oxygen [\mumol kg^-^1 min^-^1]', 'fontsize', fsize);
 %     ylim([150 220]);
@@ -181,32 +200,33 @@ for i = 1:length(txtfiles)
     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
     set(gca, 'fontsize', fsize);
     
-    plotname = [island_name,'_',plotvar,'.png'];
-    saveas(f1, plotname);
-    %movefile(plotname, 'plots', 'f');
-    
-    plotvar = 'DOXY_lpf';
-    
-    f2 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
-    hold on
-    plot(manta.SDN(1:end), manta.(plotvar)(:,1:6), 'linewidth', lwidth);
-    plot(manta.SDN(DOXYmax_locs{1}), DOXYmax{1},'rv','MarkerFaceColor','r');
-    plot(manta.SDN(DOXYmin_locs{1}), DOXYmin{1},'rs','MarkerFaceColor','b');
-    title(island_name, 'fontsize', fsize);
-    ylabel('LPF Oxygen [\mumol kg^-^1]', 'fontsize', fsize);
-    ylim([140 220]);
-%     ylim([-0.6 0.6]);
-    datetick('x', 'HH:MM');
-    legend('1', '2', '3', '4', '5', '6', 'peaks', 'troughs','Location','eastoutside');
-    set(gca, 'fontsize', fsize);
-    
-    plotname = [island_name,'_',plotvar,'.png'];
-    saveas(f2, plotname);
+    plotname = [island_name,'_',plotvar,'.eps'];
+    saveas(f1, plotname, 'epsc');
+
+%     plotvar = 'DOXY_lpf';
+%     
+%     f2 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+%     hold on
+%     plot(manta.SDN(1:end), manta.(plotvar)(:,1:6), 'linewidth', lwidth);
+%     plot(manta.SDN(DOXYmax_locs{1}), DOXYmax{1},'rv','MarkerFaceColor','r');
+%     plot(manta.SDN(DOXYmin_locs{1}), DOXYmin{1},'rs','MarkerFaceColor','b');
+%     title(island_name, 'fontsize', fsize);
+%     ylabel('LPF Oxygen [\mumol kg^-^1]', 'fontsize', fsize);
+%     ylim([140 220]);
+% %     ylim([-0.6 0.6]);
+%     datetick('x', 'HH:MM');
+%     legend('1', '2', '3', '4', '5', '6', 'peaks', 'troughs','Location','eastoutside');
+%     set(gca, 'fontsize', fsize);
+%     
+%     plotname = [island_name,'_',plotvar,'.png'];
+%     saveas(f2, plotname);
 
  
     f_name = [island_name,'.mat'];
     
-    save(f_name, 'manta', 'island_name');
+    baselineDO = mean(manta.DOXY);
+    
+    save(f_name, 'manta', 'island_name', 'baselinesat', 'baselineDO');
     close all
     
     

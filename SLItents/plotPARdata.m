@@ -9,11 +9,11 @@ function [] = plotPARdata(SDN, PAR, island_name, plotname)
     plot(SDN, PAR, 'linewidth', lwidth);
     title(island_name, 'fontsize', fsize);
     ylabel('PAR [\mumol photons m^-^2 s^-^1]', 'fontsize', fsize);
-    ylim([0 1400]);
+    ylim([0 1800]);
     datetick('x', 'HH:MM');
     set(gca, 'fontsize', fsize);
     
-    saveas(f1, plotname);
+    saveas(f1, plotname, 'epsc');
 
 end
 
