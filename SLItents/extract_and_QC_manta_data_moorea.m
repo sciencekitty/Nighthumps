@@ -8,44 +8,29 @@ close all
 % folder path where text files are kept
 folder = '/Users/sandicalhoun/Nighthumps/SLItents/raw_tent_text_files/';
 % list of text file names for manta data
-txtfiles = {'flint_manta.txt'
-    'vostok_manta.txt'
-    'malden_manta.txt'
-    'millennium_manta.txt'
-    'starbuck_manta.txt'
-    'fanning_manta.txt'
-    'jarvis_manta.txt'
-    'kingman_manta.txt'
-    'kiritimati_manta.txt'
-    'palmyra_manta.txt'
-    'washington_manta.txt'};
+txtfiles = {'Moorea_9_1_11.txt'
+    'Moorea_9_5_11.txt'
+    'Moorea_9_8_11.txt'
+    'Moorea_9_12_11.txt'
+    'Moorea_9_14_11.txt'
+    'Moorea_9_17_11.txt'};
 
 for i = 1:length(txtfiles)
     island_name = txtfiles{i};
     island_name = island_name(1:end-10);
     switch txtfiles{i}
-        case 'flint_manta.txt'
-            daterange = [datenum(2013,10,18,11,0,0) datenum(2013,10,21,8,30,0)];
-        case 'vostok_manta.txt'
-            daterange = [datenum(2013,10,22,8,0,0) datenum(2013,10,24,11,15,0)];
-        case 'malden_manta.txt'
+        case 'Moorea_9_1_11.txt'
+            daterange = [datenum(2011,9,2,9,50,0) datenum(2011,9,4,17,25,0)];
+        case 'Moorea_9_5_11.txt'
+            daterange = [datenum(2011,10,22,8,0,0) datenum(2013,10,24,11,15,0)];
+        case 'Moorea_9_8_11.txt'
             daterange = [datenum(2013,10,30,10,0,0) datenum(2013,11,2,8,0,0)];
-        case 'millennium_manta.txt'
+        case 'Moorea_9_12_11.txt'
             daterange = [datenum(2013,11,5,10,0,0) datenum(2013,11,8,9,30,0)];
-        case 'starbuck_manta.txt'
+        case 'Moorea_9_14_11.txt'
             daterange = [datenum(2013,10,26,10,30,0) datenum(2013,10,29,9,0,0)];
-        case 'fanning_manta.txt'
+        case 'Moorea_9_17_11.txt'
             daterange = [datenum(2010,11,4,10,0,0) datenum(2010,11,7,13,55,0)];
-        case 'jarvis_manta.txt'
-            daterange = [datenum(2010,11,12,10,30,0) datenum(2010,11,14,15,0,0)];
-        case 'kingman_manta.txt'
-            daterange = [datenum(2010,10,30,10,40,0) datenum(2010,11,2,12,20,0)];
-        case 'kiritimati_manta.txt'
-            daterange = [datenum(2010,11,20,11,5,0) datenum(2010,11,21,11,5,0)];
-        case 'palmyra_manta.txt'
-            daterange = [datenum(2010,10,25,14,0,0) datenum(2010,10,28,13,15,0)];
-        case 'washington_manta.txt'
-            daterange = [datenum(2010,11,8,10,45,0) datenum(2010,11,10,12,45,0)];
     end
     
     trex = manta2mat([folder,txtfiles{i}]);
@@ -504,10 +489,10 @@ for i = 1:length(txtfiles)
     title(island_name, 'fontsize', fsize);
     ylabel('Derivative LPF Oxygen [\mumol kg^-^1 min^-^1]', 'fontsize', fsize);
 %     ylim([150 220]);
-%     ylim([-2.0 2.0]);
+    ylim([-2.0 2.0]);
     datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
-    set(gca, 'fontsize', fsize,'XTickLabelRotation', 45);
+    set(gca, 'fontsize', fsize);
     
     plotname = [island_name,'_',plotvar,'.eps'];
     saveas(f1, plotname, 'epsc');
@@ -525,7 +510,7 @@ for i = 1:length(txtfiles)
 %     ylim([-2.0 2.0]);
     datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
-    set(gca, 'fontsize', fsize,'XTickLabelRotation', 45);
+    set(gca, 'fontsize', fsize);
     
     plotname = [island_name,'_',plotvar,'.eps'];
     saveas(f2, plotname, 'epsc');
@@ -543,7 +528,7 @@ for i = 1:length(txtfiles)
     %ylim([-2.0 2.0]);
     datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
-    set(gca, 'fontsize', fsize,'XTickLabelRotation', 45);
+    set(gca, 'fontsize', fsize);
     
     plotname = [island_name,'_',plotvar,'.eps'];
     saveas(f3, plotname, 'epsc');
@@ -561,7 +546,7 @@ for i = 1:length(txtfiles)
 %     ylim([-2.0 2.0]);
     datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
-    set(gca, 'fontsize', fsize,'XTickLabelRotation', 45);
+    set(gca, 'fontsize', fsize);
     
     plotname = [island_name,'_',plotvar,'.eps'];
     saveas(f4, plotname, 'epsc');
@@ -579,7 +564,7 @@ for i = 1:length(txtfiles)
 %     ylim([-2.0 2.0]);
     datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
-    set(gca, 'fontsize', fsize,'XTickLabelRotation', 45);
+    set(gca, 'fontsize', fsize);
     
     plotname = [island_name,'_',plotvar,'.eps'];
     saveas(f5, plotname, 'epsc');
@@ -597,7 +582,7 @@ for i = 1:length(txtfiles)
 %     ylim([-2.0 2.0]);
     datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
-    set(gca, 'fontsize', fsize,'XTickLabelRotation', 45);
+    set(gca, 'fontsize', fsize);
     
     plotname = [island_name,'_',plotvar,'.eps'];
     saveas(f5, plotname, 'epsc');
@@ -615,7 +600,7 @@ for i = 1:length(txtfiles)
 %     ylim([-2.0 2.0]);
     datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
-    set(gca, 'fontsize', fsize,'XTickLabelRotation', 45);
+    set(gca, 'fontsize', fsize);
     
     plotname = [island_name,'_',plotvar,'.eps'];
     saveas(f6, plotname, 'epsc');
@@ -633,7 +618,7 @@ for i = 1:length(txtfiles)
 %     ylim([-2.0 2.0]);
     datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
-    set(gca, 'fontsize', fsize,'XTickLabelRotation', 45);
+    set(gca, 'fontsize', fsize);
     
     plotname = [island_name,'_',plotvar,'.eps'];
     saveas(f6, plotname, 'epsc');
@@ -651,7 +636,7 @@ for i = 1:length(txtfiles)
 %     ylim([-2.0 2.0]);
     datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5', '6','peaks','troughs','Location','eastoutside');
-    set(gca, 'fontsize', fsize,'XTickLabelRotation', 45);
+    set(gca, 'fontsize', fsize);
     
     plotname = [island_name,'_',plotvar,'.eps'];
     saveas(f6, plotname, 'epsc');
