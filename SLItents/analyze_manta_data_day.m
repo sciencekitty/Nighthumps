@@ -54,14 +54,14 @@ for i = 1:length(mantafiles)
     
     % Break PAR data into individual days
     analysis.day=zeros(size(iuse));
-    day=1;
+    night=1;
     d=1;
     while d<=length(iuse)-1
         if iuse(d)==true
-            analysis.day(d)=day;
+            analysis.day(d)=night;
         elseif iuse(d)==false&&iuse(d+1)==true
-            day=day+1;
-            analysis.day(d+1)=day;
+            night=night+1;
+            analysis.day(d+1)=night;
         end
         d=d+1;
     end  
@@ -69,7 +69,7 @@ for i = 1:length(mantafiles)
     analysis.day(end)=analysis.day(end-1);
     
     % Zero baselines 
-    analysis.hrs=[1:length(analysis.PAR)]'*5/60;
+    analysis.minutes=[1:length(analysis.PAR)]'*5;
     analysis.secs=[1:length(analysis.PAR)]'*5*60;
     base=min(analysis.DOXY);
     for ii=1:length(base)
@@ -313,10 +313,187 @@ for i = 1:length(mantafiles)
 %    legend(sensor, 'Box', 'off', 'Location', 'southeast');
 %    filename=[name,'_linreg.eps'];
 %    saveas(f2, filename, 'epsc');
+    
+    % isolate data when PAR < 1 (nighttime)
+    analysis.DOXY=interp1(manta.SDN, manta.DOXY, par.SDN);
+    analysis.pH=interp1(manta.SDN, manta.pH, par.SDN);
+    analysis.ORP=interp1(manta.SDN, manta.ORP,par.SDN);
+    analysis.TC=interp1(manta.SDN, manta.TC, par.SDN);
+    
+    isnonan = ~isnan(analysis.DOXY(:,1));
+    iuse=inrange(par.PAR,[min(par.PAR) 1], 'includeleft');
+    
+    analysis.DOXY=analysis.DOXY(iuse&isnonan,:);
+    analysis.SDN=par.SDN(iuse&isnonan,:);
+    analysis.PAR=par.PAR(iuse&isnonan,:);
+    analysis.pH=analysis.pH(iuse&isnonan,:);
+    analysis.ORP=analysis.ORP(iuse&isnonan,:);
+    analysis.TC=analysis.TC(iuse&isnonan,:);
+    
+    % Break PAR data into individual nights
+    analysis.night=zeros(size(iuse));
+    night=1;
+    d=1;
+    while d<=length(iuse)-1
+        if iuse(d)==true
+            analysis.night(d)=night;
+        elseif iuse(d)==false&&iuse(d+1)==true
+            night=night+1;
+            analysis.night(d+1)=night;
+        end
+        d=d+1;
+    end  
+    analysis.night=analysis.night(iuse&isnonan);
+    analysis.night(end)=analysis.night(end-1);
+    
+    % Zero baselines 
+    analysis.minutes=[1:length(analysis.PAR)]'*5;
+    analysis.secs=[1:length(analysis.PAR)]'*5*60;
+    base=min(analysis.DOXY);
+    for ii=1:length(base)
+        analysis.DOXYbase(:,ii)=analysis.DOXY(:,ii)-base(ii);
+    end
+    
+    base=min(analysis.pH);
+    for ii=1:length(base)
+        analysis.pHbase(:,ii)=analysis.pH(:,ii)-base(ii);
+    end
+    
+    base=min(analysis.ORP);
+    for ii=1:length(base)
+        analysis.ORPbase(:,ii)=analysis.ORP(:,ii)-base(ii);
+    end
+    
+    base=min(analysis.TC);
+    for ii=1:length(base)
+        analysis.TCbase(:,ii)=analysis.TC(:,ii)-base(ii);
+    end
+    
+    [~,nightind]=unique(analysis.night);
+    nightind=[nightind;length(analysis.night)];
+    for ii=1:length(nightind)-1
+        nightnum=num2str(ii);
+        var2=['intDOXY',nightnum];
+        var5=['DOXYmax',nightnum];
+        var7=['DOXYmin',nightnum];
+        var9=['DOXYmean',nightnum];
+        var11=['DOXYstd',nightnum];
+        
+        var14=['intpH',nightnum];
+        var15=['pHmax',nightnum];
+        var16=['pHmin',nightnum];
+        var17=['pHmean',nightnum];
+        var18=['pHstd',nightnum];
+        var19=['ratioDOXY_pH',nightnum];
+        var20=['slopesDOXY_pH',nightnum];
+        var21=['rsqDOXY_pH',nightnum];
+        
+        var22=['intORP',nightnum];
+        var23=['ORPmax',nightnum];
+        var24=['ORPmin',nightnum];
+        var25=['ORPmean',nightnum];
+        var26=['ORPstd',nightnum];
+        var27=['ratioDOXY_ORP',nightnum];
+        var28=['slopesDOXY_ORP',nightnum];
+        var29=['rsqDOXY_ORP',nightnum];
+        
+        var30=['intTC',nightnum];
+        var31=['TCmax',nightnum];
+        var32=['TCmin',nightnum];
+        var33=['TCmean',nightnum];
+        var34=['TCstd',nightnum];
+        var35=['ratioDOXY_TC',nightnum];
+        var36=['slopesDOXY_TC',nightnum];
+        var37=['rsqDOXY_TC',nightnum];
+            
+        % Daily values
+        DOXYbase=analysis.nightDOXYbase(nightind(ii):nightind(ii+1),:);
+        DOXY=analysis.nightDOXY(nightind(ii):nightind(ii+1),:);
+        pHbase=analysis.nightpHbase(nightind(ii):nightind(ii+1),:);
+        pH=analysis.nightpH(nightind(ii):nightind(ii+1),:);
+        ORPbase=analysis.nightORPbase(nightind(ii):nightind(ii+1),:);
+        ORP=analysis.nightORP(nightind(ii):nightind(ii+1),:);
+        TCbase=analysis.nightTC(nightind(ii):nightind(ii+1),:);
+        TC=analysis.nightTC(nightind(ii):nightind(ii+1),:);
+        
+        % Trapezoidal numerical integration
+        analysis.nightly.(var2)=trapz(analysis.secs(nightind(ii):nightind(ii+1),:),DOXYbase)';
+        analysis.nightly.(var14)=trapz(analysis.secs(nightind(ii):nightind(ii+1),:),pHbase)';
+        analysis.nightly.(var22)=trapz(analysis.secs(nightind(ii):nightind(ii+1),:),ORPbase)';
+        analysis.nightly.(var30)=trapz(analysis.secs(nightind(ii):nightind(ii+1),:),TCbase)';
+        
+        % Integration ratios
+        analysis.nightly.(var19)=analysis.nightly.(var14)./analysis.nightly.(var2);
+        analysis.nightly.(var27)=analysis.nightly.(var22)./analysis.nightly.(var2);
+        analysis.nightly.(var35)=analysis.nightly.(var30)./analysis.nightly.(var2);
+        
+        % Max, min, and means
+        analysis.nightly.(var5)=max(DOXY)';
+        analysis.nightly.(var15)=max(pH)';
+        analysis.nightly.(var23)=max(ORP)';
+        analysis.nightly.(var31)=max(TC)';
+        analysis.nightly.(var7)=min(DOXY)';
+        analysis.nightly.(var16)=min(pH)';
+        analysis.nightly.(var24)=min(ORP)';
+        analysis.nightly.(var32)=min(TC)';
+        analysis.nightly.(var9)=mean(DOXY)';
+        analysis.nightly.(var17)=mean(pH)';
+        analysis.nightly.(var25)=mean(ORP)';
+        analysis.nightly.(var33)=mean(TC)';
+        analysis.nightly.(var11)=std(DOXY)';
+        analysis.nightly.(var18)=std(pH)';
+        analysis.nightly.(var26)=std(ORP)';
+        analysis.nightly.(var34)=std(TC)';
+        
+        % Linear regression
+        slopes=zeros(1,6);
+        rsqs=zeros(1,6);
+        
+        for iii=1:6
+            x=analysis.nightpH(nightind(ii):nightind(ii+1),iii);
+            y=analysis.nightDOXY(nightind(ii):nightind(ii+1),iii);
+            p=polyfit(x,y,1);
+            slope=p(1,1);
+            yfit=polyval(p,x);
+            r_sq=rsq(yfit,y);
+            slopes(1,iii)=slope;
+            rsqs(iii)=r_sq;
+        end
+        analysis.nightly.(var20)=slopes';
+        analysis.nightly.(var21)=rsqs';
+        
+        for iii=1:6
+            x=analysis.nightORP(nightind(ii):nightind(ii+1),iii);
+            y=analysis.nightDOXY(nightind(ii):nightind(ii+1),iii);
+            p=polyfit(x,y,1);
+            slope=p(1,1);
+            yfit=polyval(p,x);
+            r_sq=rsq(yfit,y);
+            slopes(1,iii)=slope;
+            rsqs(iii)=r_sq;
+        end
+        analysis.nightly.(var28)=slopes';
+        analysis.nightly.(var29)=rsqs';
+        
+        for iii=1:6
+            x=analysis.nightTC(nightind(ii):nightind(ii+1),iii);
+            y=analysis.nightDOXY(nightind(ii):nightind(ii+1),iii);
+            p=polyfit(x,y,1);
+            slope=p(1,1);
+            yfit=polyval(p,x);
+            r_sq=rsq(yfit,y);
+            slopes(1,iii)=slope;
+            rsqs(iii)=r_sq;
+        end
+        analysis.nightly.(var36)=slopes';
+        analysis.nightly.(var37)=rsqs';
 
-    f_name = [name,'_analysis_day.mat'];
+    end
+   
+    f_name = [name,'_analysis.mat'];
     
     save(f_name, 'analysis', 'name');
+    
     close all
     
     

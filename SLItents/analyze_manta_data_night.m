@@ -48,7 +48,7 @@ for i = 1:length(mantafiles)
     dawn=datenum(2000,1,1,6,0,0);
     dusk=datenum(2000,1,1,18,0,0);
     
-    % Set timeframe for nighttime (6:00 to 18:00)
+    % Set timeframe for nighttime (18:00 to 6:00)
     iuse=~inrange(analysis.hour,[dawn,dusk]);
     
     analysis.nightDOXY=manta.DOXY(iuse,:);
@@ -273,27 +273,6 @@ for i = 1:length(mantafiles)
 
     end
     
-    [~,dayind]=unique(analysis.day);
-    dayind=[dayind;length(analysis.day)];
-    for ii=1:length(dayind)-1
-        daynum=num2str(ii);
-        var1=['intdayDOXY',daynum];
-        var2=['intdaypH',daynum];
-        var3=['intdayORP',daynum];
-        var4=['intdayTC',daynum];
-            
-        % Daily values
-        dayDOXYbase=analysis.dayDOXYbase(dayind(ii):dayind(ii+1),:);
-        daypHbase=analysis.daypHbase(dayind(ii):dayind(ii+1),:);
-        dayORPbase=analysis.dayORPbase(dayind(ii):dayind(ii+1),:);
-        dayTCbase=analysis.dayTC(dayind(ii):dayind(ii+1),:);
-        
-        % Trapezoidal numerical integration
-        analysis.nightly.(var1)=trapz(dayDOXYbase)';
-        analysis.nightly.(var2)=trapz(daypHbase)';
-        analysis.nightly.(var3)=trapz(dayORPbase)';
-        analysis.nightly.(var4)=trapz(dayTCbase)';
-    end
 
     f_name = [name,'_analysis_night.mat'];
     

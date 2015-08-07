@@ -26,26 +26,37 @@ for i = 1:length(txtfiles)
     switch txtfiles{i}
         case 'flint_manta.txt'
             daterange = [datenum(2013,10,18,11,0,0) datenum(2013,10,21,8,30,0)];
+            CONDsens = [1,2,3,5,6];
         case 'vostok_manta.txt'
             daterange = [datenum(2013,10,22,8,0,0) datenum(2013,10,24,11,15,0)];
+            CONDsens = [1,2,3,4];
         case 'malden_manta.txt'
             daterange = [datenum(2013,10,30,10,0,0) datenum(2013,11,2,8,0,0)];
+            CONDsens = [2,3,4,5,6];
         case 'millennium_manta.txt'
             daterange = [datenum(2013,11,5,10,0,0) datenum(2013,11,8,9,30,0)];
+            CONDsens = [1,2,3,5];
         case 'starbuck_manta.txt'
             daterange = [datenum(2013,10,26,10,30,0) datenum(2013,10,29,9,0,0)];
+            CONDsens = [1,2,5,6];
         case 'fanning_manta.txt'
             daterange = [datenum(2010,11,4,10,0,0) datenum(2010,11,7,13,55,0)];
+            CONDsens = [1,2,3,4,6];
         case 'jarvis_manta.txt'
             daterange = [datenum(2010,11,12,10,30,0) datenum(2010,11,14,15,0,0)];
+            CONDsens = [1,3,4,5,6];
         case 'kingman_manta.txt'
             daterange = [datenum(2010,10,30,10,40,0) datenum(2010,11,2,12,20,0)];
+            CONDsens = [1,2,6];
         case 'kiritimati_manta.txt'
             daterange = [datenum(2010,11,20,11,5,0) datenum(2010,11,21,11,5,0)];
+            CONDsens = [1,2,3,4,5,6];
         case 'palmyra_manta.txt'
             daterange = [datenum(2010,10,25,14,0,0) datenum(2010,10,28,13,15,0)];
+            CONDsens = [1,2,3,4,6];
         case 'washington_manta.txt'
             daterange = [datenum(2010,11,8,10,45,0) datenum(2010,11,10,12,45,0)];
+            CONDsens = [2,3,4,5,6];
     end
     
     trex = manta2mat([folder,txtfiles{i}]);
@@ -88,10 +99,8 @@ for i = 1:length(txtfiles)
     trex.VpH = bsxfun(@plus,trex.VpH,adj);
     baselinevph=nanmean(trex.VpH,1);
     
-    baseline = nanmean(nanmean(trex.COND(1:6,1:6)));
-    adj = baseline - nanmean(trex.COND,1);
-    trex.COND = bsxfun(@plus,trex.COND,adj);
-    baselinecond=nanmean(trex.COND,1);
+    COND = nanmean(trex.COND(:,CONDsens),2);
+    for ii = 1:6, trex.COND(:,ii) = COND; end
     
     % Calculate salinity from conductivity [uS/cm].
     trex.PSAL = SP_from_C(trex.COND/10000, trex.TC, 10);

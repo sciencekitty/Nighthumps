@@ -23,7 +23,11 @@ load('peaks.mat');
 vars={'DOXY'
     'pH'
     'ORP'
-    'TC'};
+    'TC'
+    'VpH'
+    'COND'
+    'PSAL'
+    'DENS'};
 
 for i=1:length(vars)
     var1=[vars{i},'mean'];
@@ -99,42 +103,42 @@ for i=1:length(vars)
         slopes=zeros(daynum,6);
         rsqs=zeros(daynum,6);
 
-        for iii=1:daynum
-            num=num2str(iii);
-            varA=[vars{i},'mean',num];
-            varB=[vars{i},'std',num];
-            varC=['int',vars{i},num];
-            varD=['ratio',vars{i},'_PAR',num];
-            varE=['slopes',vars{i},'_PAR',num];
-            varF=['rsq',vars{i},'_PAR',num];
+%         for iii=1:daynum
+%             num=num2str(iii);
+%             varA=[vars{i},'mean',num];
+%             varB=[vars{i},'std',num];
+%             varC=['int',vars{i},num];
+%             varD=['ratio',vars{i},'_PAR',num];
+%             varE=['slopes',vars{i},'_PAR',num];
+%             varF=['rsq',vars{i},'_PAR',num];
+% 
+%             means(iii,:)=analysis.daily.(varA)';
+%             sds(iii,:)=analysis.daily.(varB)';
+%             ints(iii,:)=analysis.daily.(varC)';
+%             ratios(iii,:)=analysis.daily.(varD)';
+%             slopes(iii,:)=analysis.daily.(varE)';
+%             rsqs(iii,:)=analysis.daily.(varF)';
+%             
+%         end
 
-            means(iii,:)=analysis.daily.(varA)';
-            sds(iii,:)=analysis.daily.(varB)';
-            ints(iii,:)=analysis.daily.(varC)';
-            ratios(iii,:)=analysis.daily.(varD)';
-            slopes(iii,:)=analysis.daily.(varE)';
-            rsqs(iii,:)=analysis.daily.(varF)';
-            
-        end
-
-        dayfigs.(name).(var1)=means;
-        dayfigs.(name).(var2)=sds;
-        dayfigs.(name).(var3)=ints;
-        dayfigs.(name).(var4)=ratios;
-        dayfigs.(name).(var5)=slopes;
-        dayfigs.(name).(var6)=rsqs;
-
+%         dayfigs.(name).(var1)=means;
+%         dayfigs.(name).(var2)=sds;
+%         dayfigs.(name).(var3)=ints;
+%         dayfigs.(name).(var4)=ratios;
+%         dayfigs.(name).(var5)=slopes;
+%         dayfigs.(name).(var6)=rsqs;
+% 
         rows={'Sensor1'
             'Sensor2'
             'Sensor3'
             'Sensor4'
             'Sensor5'
             'Sensor6'};
-
-        summary=struct2table(analysis.daily);
-        summary.Properties.RowNames=rows;
-        filename=[name,'_dailySummary.txt'];
-        writetable(summary,filename,'Delimiter','\t','WriteRowNames',1);
+% 
+%         summary=struct2table(analysis.daily);
+%         summary.Properties.RowNames=rows;
+%         filename=[name,'_dailySummary.txt'];
+%         writetable(summary,filename,'Delimiter','\t','WriteRowNames',1);
         
         peakslat(1,1)=latitude;
         for iii=2:length(peaks.(name).(dmax)(:,1))
@@ -246,313 +250,313 @@ for i=1:length(vars)
 
     end
     
-    f1 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-    
-    errorbar(dayfigs.(island{1}).daylat,dayfigs.(island{1}).(var1),dayfigs.(island{1}).(var2),'d','Color',[0 0.3 0.1]);
-    errorbar(dayfigs.(island{2}).daylat,dayfigs.(island{2}).(var1),dayfigs.(island{2}).(var2),'d','Color',[0 0.5 0.2]);
-    errorbar(dayfigs.(island{3}).daylat,dayfigs.(island{3}).(var1),dayfigs.(island{3}).(var2),'d','Color',[0 0.5 0.4]);
-    errorbar(dayfigs.(island{4}).daylat,dayfigs.(island{4}).(var1),dayfigs.(island{4}).(var2),'d','Color',[0 0.6 0.2]);
-    errorbar(dayfigs.(island{5}).daylat,dayfigs.(island{5}).(var1),dayfigs.(island{5}).(var2),'d','Color',[0 0.6 0.3]);
-    errorbar(dayfigs.(island{6}).daylat,dayfigs.(island{6}).(var1),dayfigs.(island{6}).(var2),'d','Color',[0 0.8 0.4]);
-    errorbar(dayfigs.(island{7}).daylat,dayfigs.(island{7}).(var1),dayfigs.(island{7}).(var2),'d','Color',[0 0.3 0.8]);
-    errorbar(dayfigs.(island{8}).daylat,dayfigs.(island{8}).(var1),dayfigs.(island{8}).(var2),'d','Color',[0 0.4 1]);
-    errorbar(dayfigs.(island{9}).daylat,dayfigs.(island{9}).(var1),dayfigs.(island{9}).(var2),'d','Color',[0 0.6 1]);
-    errorbar(dayfigs.(island{10}).daylat,dayfigs.(island{10}).(var1),dayfigs.(island{10}).(var2),'d','Color',[0 0.8 1]);
-
-    title('Daily Means');
-    ylabel('Mean');
-    legend(island, 'Box','off');
-    ax.XTick=[-20:3:20];
-    ax.XTickLabel=island;
-    filename=[vars{i},'_DailyMeans.eps'];
-    saveas(f1, filename, 'epsc');
-    
-    f2 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-    
-    plot(dayfigs.(island{1}).daylat,dayfigs.(island{1}).(var3),'d','Color',[0 0.3 0.1]);
-    plot(dayfigs.(island{2}).daylat,dayfigs.(island{2}).(var3),'d','Color',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).daylat,dayfigs.(island{3}).(var3),'d','Color',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).daylat,dayfigs.(island{4}).(var3),'d','Color',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).daylat,dayfigs.(island{5}).(var3),'d','Color',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).daylat,dayfigs.(island{6}).(var3),'d','Color',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).daylat,dayfigs.(island{7}).(var3),'d','Color',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).daylat,dayfigs.(island{8}).(var3),'d','Color',[0 0.4 1]);
-    plot(dayfigs.(island{9}).daylat,dayfigs.(island{9}).(var3),'d','Color',[0 0.6 1]);
-    plot(dayfigs.(island{10}).daylat,dayfigs.(island{10}).(var3),'d','Color',[0 0.8 1]);
-
-    title('Daily Integrated Totals');
-    ylabel('Integrated Total');
-    legend(island, 'Box','off');
-    ax.XTick=[-20:3:20];
-    ax.XTickLabel=island;
-    filename=[vars{i},'_DailyTotals.eps'];
-    saveas(f2, filename, 'epsc');
-    
-    f3 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-    
-    plot(dayfigs.(island{1}).daylat,dayfigs.(island{1}).(var4),'d','Color',[0 0.3 0.1]);
-    plot(dayfigs.(island{2}).daylat,dayfigs.(island{2}).(var4),'d','Color',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).daylat,dayfigs.(island{3}).(var4),'d','Color',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).daylat,dayfigs.(island{4}).(var4),'d','Color',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).daylat,dayfigs.(island{5}).(var4),'d','Color',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).daylat,dayfigs.(island{6}).(var4),'d','Color',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).daylat,dayfigs.(island{7}).(var4),'d','Color',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).daylat,dayfigs.(island{8}).(var4),'d','Color',[0 0.4 1]);
-    plot(dayfigs.(island{9}).daylat,dayfigs.(island{9}).(var4),'d','Color',[0 0.6 1]);
-    plot(dayfigs.(island{10}).daylat,dayfigs.(island{10}).(var4),'d','Color',[0 0.8 1]);
-
-    title('Daily Ratios');
-    ylabel('Ratio');
-    legend(island, 'Box','off');
-    ax.XTick=[-20:3:20];
-    ax.XTickLabel=island;
-    filename=[vars{i},'_DailyRatios.eps'];
-    saveas(f3, filename, 'epsc');
-    
-    f4 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-    
-    plot(dayfigs.(island{1}).daylat,dayfigs.(island{1}).(var5),'d','Color',[0 0.3 0.1]);
-    plot(dayfigs.(island{2}).daylat,dayfigs.(island{2}).(var5),'d','Color',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).daylat,dayfigs.(island{3}).(var5),'d','Color',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).daylat,dayfigs.(island{4}).(var5),'d','Color',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).daylat,dayfigs.(island{5}).(var5),'d','Color',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).daylat,dayfigs.(island{6}).(var5),'d','Color',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).daylat,dayfigs.(island{7}).(var5),'d','Color',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).daylat,dayfigs.(island{8}).(var5),'d','Color',[0 0.4 1]);
-    plot(dayfigs.(island{9}).daylat,dayfigs.(island{9}).(var5),'d','Color',[0 0.6 1]);
-    plot(dayfigs.(island{10}).daylat,dayfigs.(island{10}).(var5),'d','Color',[0 0.8 1]);
-    
-    title('Daily Slopes');
-    ylabel('Slopes');
-    legend(island, 'Box','off');
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    filename=[vars{i},'_DailySlopes.eps'];
-    saveas(f4, filename, 'epsc');
-    
-    f5 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-    
-    plot(dayfigs.(island{1}).daylat,dayfigs.(island{1}).(var6),'+','Color',[0 0.3 0.1]);
-    plot(dayfigs.(island{2}).daylat,dayfigs.(island{2}).(var6),'+','Color',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).daylat,dayfigs.(island{3}).(var6),'+','Color',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).daylat,dayfigs.(island{4}).(var6),'+','Color',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).daylat,dayfigs.(island{5}).(var6),'+','Color',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).daylat,dayfigs.(island{6}).(var6),'+','Color',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).daylat,dayfigs.(island{7}).(var6),'+','Color',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).daylat,dayfigs.(island{8}).(var6),'+','Color',[0 0.4 1]);
-    plot(dayfigs.(island{9}).daylat,dayfigs.(island{9}).(var6),'+','Color',[0 0.6 1]);
-    plot(dayfigs.(island{10}).daylat,dayfigs.(island{10}).(var6),'+','Color',[0 0.8 1]);
-    
-    title('Daily R-Squared values');
-    ylabel('R-Squared');
-    legend(island, 'Box','off');
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    filename=[vars{i},'_DailyRsq.eps'];
-    saveas(f5, filename, 'epsc');
-    
-    f6 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-
-    plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(dmax),'o','Color',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(dmax),'o','Color',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(dmax),'o','Color',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(dmax),'o','Color',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(dmax),'o','Color',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(dmax),'o','Color',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(dmax),'o','Color',[0 0.4 1]);
-    plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(dmax),'o','Color',[0 0.6 1]);
-    plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(dmax),'o','Color',[0 0.8 1]);
-
-    title('Daily Max Rates');
-    ylabel('Rate');
-    legend(island,'Box','off');
-    filename=[vars{i},'_DailyMaxRates.eps'];
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    saveas(f6, filename, 'epsc');    
-    
-    f7 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-
-    plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(dmin),'d','Color',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(dmin),'d','Color',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(dmin),'d','Color',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(dmin),'d','Color',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(dmin),'d','Color',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(dmin),'d','Color',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(dmin),'d','Color',[0 0.4 1]);
-    plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(dmin),'d','Color',[0 0.6 1]);
-    plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(dmin),'d','Color',[0 0.8 1]);
-
-    title('Daily Min Rates');
-    ylabel('Rate');
-    legend(island,'Box','off');
-    filename=[vars{i},'_DailyMinRates.eps'];
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    saveas(f7, filename, 'epsc');
-    
-    f8 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-
-    plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(dmax_locs),'o','Color',[0 0.5 0.2],'MarkerFaceColor',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(dmax_locs),'o','Color',[0 0.5 0.4],'MarkerFaceColor',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(dmax_locs),'o','Color',[0 0.6 0.2],'MarkerFaceColor',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(dmax_locs),'o','Color',[0 0.6 0.3],'MarkerFaceColor',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(dmax_locs),'o','Color',[0 0.8 0.4],'MarkerFaceColor',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(dmax_locs),'o','Color',[0 0.3 0.8],'MarkerFaceColor',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(dmax_locs),'o','Color',[0 0.4 1],'MarkerFaceColor',[0 0.4 1]);
-    plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(dmax_locs),'o','Color',[0 0.6 1],'MarkerFaceColor',[0 0.6 1]);
-    plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(dmax_locs),'o','Color',[0 0.8 1],'MarkerFaceColor',[0 0.8 1]);
-
-    title('Daily Max Rate Times');
-    ylabel('Time');
-    datetick('y', 'HH:MM');
-    legend(island,'Box','off');
-    filename=[vars{i},'_DailyMaxRateTimes.eps'];
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    saveas(f8, filename, 'epsc');
-    
-    f9 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-
-    plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(dmin_locs),'o','Color',[0 0.5 0.2],'MarkerFaceColor',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(dmin_locs),'o','Color',[0 0.5 0.4],'MarkerFaceColor',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(dmin_locs),'o','Color',[0 0.6 0.2],'MarkerFaceColor',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(dmin_locs),'o','Color',[0 0.6 0.3],'MarkerFaceColor',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(dmin_locs),'o','Color',[0 0.8 0.4],'MarkerFaceColor',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(dmin_locs),'o','Color',[0 0.3 0.8],'MarkerFaceColor',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(dmin_locs),'o','Color',[0 0.4 1],'MarkerFaceColor',[0 0.4 1]);
-    plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(dmin_locs),'o','Color',[0 0.6 1],'MarkerFaceColor',[0 0.6 1]);
-    plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(dmin_locs),'o','Color',[0 0.8 1],'MarkerFaceColor',[0 0.8 1]);
-
-    title('Daily Min Rate Times');
-    ylabel('Time');
-    datetick('y', 'HH:MM');
-    legend(island,'Box','off');
-    filename=[vars{i},'_DailyMinRateTimes.eps'];
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    saveas(f9, filename, 'epsc');
-    
-    f10 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-
-    plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(Min),'d','Color',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(Min),'d','Color',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(Min),'d','Color',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(Min),'d','Color',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(Min),'d','Color',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(Min),'d','Color',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(Min),'d','Color',[0 0.4 1]);
-    plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(Min),'d','Color',[0 0.6 1]);
-    plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(Min),'d','Color',[0 0.8 1]);
-
-    title('Daily Mins');
-    ylabel('Min');
-    legend(island,'Box','off');
-    filename=[vars{i},'_DailyMins.eps'];
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    saveas(f10, filename, 'epsc');
-    
-    f11 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-
-    plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(Max),'d','Color',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(Max),'d','Color',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(Max),'d','Color',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(Max),'d','Color',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(Max),'d','Color',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(Max),'d','Color',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(Max),'d','Color',[0 0.4 1]);
-    plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(Max),'d','Color',[0 0.6 1]);
-    plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(Max),'d','Color',[0 0.8 1]);
-
-    title('Daily Maxes');
-    ylabel('Max');
-    legend(island,'Box','off');
-    filename=[vars{i},'_DailyMaxes.eps'];
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    saveas(f11, filename, 'epsc');
-    
-    f12 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-
-    plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(max_locs),'o','Color',[0 0.5 0.2],'MarkerFaceColor',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(max_locs),'o','Color',[0 0.5 0.4],'MarkerFaceColor',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(max_locs),'o','Color',[0 0.6 0.2],'MarkerFaceColor',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(max_locs),'o','Color',[0 0.6 0.3],'MarkerFaceColor',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(max_locs),'o','Color',[0 0.8 0.4],'MarkerFaceColor',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(max_locs),'o','Color',[0 0.3 0.8],'MarkerFaceColor',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(max_locs),'o','Color',[0 0.4 1],'MarkerFaceColor',[0 0.4 1]);
-    plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(max_locs),'o','Color',[0 0.6 1],'MarkerFaceColor',[0 0.6 1]);
-    plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(max_locs),'o','Color',[0 0.8 1],'MarkerFaceColor',[0 0.8 1]);
-
-    title('Daily Max Times');
-    ylabel('Time');
-    datetick('y', 'HH:MM');
-    legend(island,'Box','off');
-    filename=[vars{i},'_DailyMaxTimes.eps'];
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    saveas(f12, filename, 'epsc');
-    
-    f13 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-
-    plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(min_locs),'o','Color',[0 0.5 0.2],'MarkerFaceColor',[0 0.5 0.2]);
-    plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(min_locs),'o','Color',[0 0.5 0.4],'MarkerFaceColor',[0 0.5 0.4]);
-    plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(min_locs),'o','Color',[0 0.6 0.2],'MarkerFaceColor',[0 0.6 0.2]);
-    plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(min_locs),'o','Color',[0 0.6 0.3],'MarkerFaceColor',[0 0.6 0.3]);
-    plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(min_locs),'o','Color',[0 0.8 0.4],'MarkerFaceColor',[0 0.8 0.4]);
-    plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(min_locs),'o','Color',[0 0.3 0.8],'MarkerFaceColor',[0 0.3 0.8]);
-    plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(min_locs),'o','Color',[0 0.4 1],'MarkerFaceColor',[0 0.4 1]);
-    plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(min_locs),'o','Color',[0 0.6 1],'MarkerFaceColor',[0 0.6 1]);
-    plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(min_locs),'o','Color',[0 0.8 1],'MarkerFaceColor',[0 0.8 1]);
-
-    title('Daily Min Times');
-    ylabel('Time');
-    datetick('y', 'HH:MM');
-    legend(island,'Box','off');
-    filename=[vars{i},'_DailyMinTimes.eps'];
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    saveas(f13, filename, 'epsc');
+%     f1 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+%     
+%     errorbar(dayfigs.(island{1}).daylat,dayfigs.(island{1}).(var1),dayfigs.(island{1}).(var2),'d','Color',[0 0.3 0.1]);
+%     errorbar(dayfigs.(island{2}).daylat,dayfigs.(island{2}).(var1),dayfigs.(island{2}).(var2),'d','Color',[0 0.5 0.2]);
+%     errorbar(dayfigs.(island{3}).daylat,dayfigs.(island{3}).(var1),dayfigs.(island{3}).(var2),'d','Color',[0 0.5 0.4]);
+%     errorbar(dayfigs.(island{4}).daylat,dayfigs.(island{4}).(var1),dayfigs.(island{4}).(var2),'d','Color',[0 0.6 0.2]);
+%     errorbar(dayfigs.(island{5}).daylat,dayfigs.(island{5}).(var1),dayfigs.(island{5}).(var2),'d','Color',[0 0.6 0.3]);
+%     errorbar(dayfigs.(island{6}).daylat,dayfigs.(island{6}).(var1),dayfigs.(island{6}).(var2),'d','Color',[0 0.8 0.4]);
+%     errorbar(dayfigs.(island{7}).daylat,dayfigs.(island{7}).(var1),dayfigs.(island{7}).(var2),'d','Color',[0 0.3 0.8]);
+%     errorbar(dayfigs.(island{8}).daylat,dayfigs.(island{8}).(var1),dayfigs.(island{8}).(var2),'d','Color',[0 0.4 1]);
+%     errorbar(dayfigs.(island{9}).daylat,dayfigs.(island{9}).(var1),dayfigs.(island{9}).(var2),'d','Color',[0 0.6 1]);
+%     errorbar(dayfigs.(island{10}).daylat,dayfigs.(island{10}).(var1),dayfigs.(island{10}).(var2),'d','Color',[0 0.8 1]);
+% 
+%     title('Daily Means');
+%     ylabel('Mean');
+%     legend(island, 'Box','off');
+%     ax.XTick=[-20:3:20];
+%     ax.XTickLabel=island;
+%     filename=[vars{i},'_DailyMeans.eps'];
+%     saveas(f1, filename, 'epsc');
+%     
+%     f2 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+%     
+%     plot(dayfigs.(island{1}).daylat,dayfigs.(island{1}).(var3),'d','Color',[0 0.3 0.1]);
+%     plot(dayfigs.(island{2}).daylat,dayfigs.(island{2}).(var3),'d','Color',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).daylat,dayfigs.(island{3}).(var3),'d','Color',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).daylat,dayfigs.(island{4}).(var3),'d','Color',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).daylat,dayfigs.(island{5}).(var3),'d','Color',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).daylat,dayfigs.(island{6}).(var3),'d','Color',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).daylat,dayfigs.(island{7}).(var3),'d','Color',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).daylat,dayfigs.(island{8}).(var3),'d','Color',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).daylat,dayfigs.(island{9}).(var3),'d','Color',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).daylat,dayfigs.(island{10}).(var3),'d','Color',[0 0.8 1]);
+% 
+%     title('Daily Integrated Totals');
+%     ylabel('Integrated Total');
+%     legend(island, 'Box','off');
+%     ax.XTick=[-20:3:20];
+%     ax.XTickLabel=island;
+%     filename=[vars{i},'_DailyTotals.eps'];
+%     saveas(f2, filename, 'epsc');
+%     
+%     f3 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+%     
+%     plot(dayfigs.(island{1}).daylat,dayfigs.(island{1}).(var4),'d','Color',[0 0.3 0.1]);
+%     plot(dayfigs.(island{2}).daylat,dayfigs.(island{2}).(var4),'d','Color',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).daylat,dayfigs.(island{3}).(var4),'d','Color',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).daylat,dayfigs.(island{4}).(var4),'d','Color',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).daylat,dayfigs.(island{5}).(var4),'d','Color',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).daylat,dayfigs.(island{6}).(var4),'d','Color',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).daylat,dayfigs.(island{7}).(var4),'d','Color',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).daylat,dayfigs.(island{8}).(var4),'d','Color',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).daylat,dayfigs.(island{9}).(var4),'d','Color',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).daylat,dayfigs.(island{10}).(var4),'d','Color',[0 0.8 1]);
+% 
+%     title('Daily Ratios');
+%     ylabel('Ratio');
+%     legend(island, 'Box','off');
+%     ax.XTick=[-20:3:20];
+%     ax.XTickLabel=island;
+%     filename=[vars{i},'_DailyRatios.eps'];
+%     saveas(f3, filename, 'epsc');
+%     
+%     f4 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+%     
+%     plot(dayfigs.(island{1}).daylat,dayfigs.(island{1}).(var5),'d','Color',[0 0.3 0.1]);
+%     plot(dayfigs.(island{2}).daylat,dayfigs.(island{2}).(var5),'d','Color',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).daylat,dayfigs.(island{3}).(var5),'d','Color',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).daylat,dayfigs.(island{4}).(var5),'d','Color',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).daylat,dayfigs.(island{5}).(var5),'d','Color',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).daylat,dayfigs.(island{6}).(var5),'d','Color',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).daylat,dayfigs.(island{7}).(var5),'d','Color',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).daylat,dayfigs.(island{8}).(var5),'d','Color',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).daylat,dayfigs.(island{9}).(var5),'d','Color',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).daylat,dayfigs.(island{10}).(var5),'d','Color',[0 0.8 1]);
+%     
+%     title('Daily Slopes');
+%     ylabel('Slopes');
+%     legend(island, 'Box','off');
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     filename=[vars{i},'_DailySlopes.eps'];
+%     saveas(f4, filename, 'epsc');
+%     
+%     f5 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+%     
+%     plot(dayfigs.(island{1}).daylat,dayfigs.(island{1}).(var6),'+','Color',[0 0.3 0.1]);
+%     plot(dayfigs.(island{2}).daylat,dayfigs.(island{2}).(var6),'+','Color',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).daylat,dayfigs.(island{3}).(var6),'+','Color',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).daylat,dayfigs.(island{4}).(var6),'+','Color',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).daylat,dayfigs.(island{5}).(var6),'+','Color',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).daylat,dayfigs.(island{6}).(var6),'+','Color',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).daylat,dayfigs.(island{7}).(var6),'+','Color',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).daylat,dayfigs.(island{8}).(var6),'+','Color',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).daylat,dayfigs.(island{9}).(var6),'+','Color',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).daylat,dayfigs.(island{10}).(var6),'+','Color',[0 0.8 1]);
+%     
+%     title('Daily R-Squared values');
+%     ylabel('R-Squared');
+%     legend(island, 'Box','off');
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     filename=[vars{i},'_DailyRsq.eps'];
+%     saveas(f5, filename, 'epsc');
+%     
+%     f6 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+% 
+%     plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(dmax),'o','Color',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(dmax),'o','Color',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(dmax),'o','Color',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(dmax),'o','Color',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(dmax),'o','Color',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(dmax),'o','Color',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(dmax),'o','Color',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(dmax),'o','Color',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(dmax),'o','Color',[0 0.8 1]);
+% 
+%     title('Daily Max Rates');
+%     ylabel('Rate');
+%     legend(island,'Box','off');
+%     filename=[vars{i},'_DailyMaxRates.eps'];
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     saveas(f6, filename, 'epsc');    
+%     
+%     f7 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+% 
+%     plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(dmin),'d','Color',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(dmin),'d','Color',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(dmin),'d','Color',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(dmin),'d','Color',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(dmin),'d','Color',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(dmin),'d','Color',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(dmin),'d','Color',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(dmin),'d','Color',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(dmin),'d','Color',[0 0.8 1]);
+% 
+%     title('Daily Min Rates');
+%     ylabel('Rate');
+%     legend(island,'Box','off');
+%     filename=[vars{i},'_DailyMinRates.eps'];
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     saveas(f7, filename, 'epsc');
+%     
+%     f8 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+% 
+%     plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(dmax_locs),'o','Color',[0 0.5 0.2],'MarkerFaceColor',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(dmax_locs),'o','Color',[0 0.5 0.4],'MarkerFaceColor',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(dmax_locs),'o','Color',[0 0.6 0.2],'MarkerFaceColor',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(dmax_locs),'o','Color',[0 0.6 0.3],'MarkerFaceColor',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(dmax_locs),'o','Color',[0 0.8 0.4],'MarkerFaceColor',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(dmax_locs),'o','Color',[0 0.3 0.8],'MarkerFaceColor',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(dmax_locs),'o','Color',[0 0.4 1],'MarkerFaceColor',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(dmax_locs),'o','Color',[0 0.6 1],'MarkerFaceColor',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(dmax_locs),'o','Color',[0 0.8 1],'MarkerFaceColor',[0 0.8 1]);
+% 
+%     title('Daily Max Rate Times');
+%     ylabel('Time');
+%     datetick('y', 'HH:MM');
+%     legend(island,'Box','off');
+%     filename=[vars{i},'_DailyMaxRateTimes.eps'];
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     saveas(f8, filename, 'epsc');
+%     
+%     f9 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+% 
+%     plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(dmin_locs),'o','Color',[0 0.5 0.2],'MarkerFaceColor',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(dmin_locs),'o','Color',[0 0.5 0.4],'MarkerFaceColor',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(dmin_locs),'o','Color',[0 0.6 0.2],'MarkerFaceColor',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(dmin_locs),'o','Color',[0 0.6 0.3],'MarkerFaceColor',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(dmin_locs),'o','Color',[0 0.8 0.4],'MarkerFaceColor',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(dmin_locs),'o','Color',[0 0.3 0.8],'MarkerFaceColor',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(dmin_locs),'o','Color',[0 0.4 1],'MarkerFaceColor',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(dmin_locs),'o','Color',[0 0.6 1],'MarkerFaceColor',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(dmin_locs),'o','Color',[0 0.8 1],'MarkerFaceColor',[0 0.8 1]);
+% 
+%     title('Daily Min Rate Times');
+%     ylabel('Time');
+%     datetick('y', 'HH:MM');
+%     legend(island,'Box','off');
+%     filename=[vars{i},'_DailyMinRateTimes.eps'];
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     saveas(f9, filename, 'epsc');
+%     
+%     f10 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+% 
+%     plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(Min),'d','Color',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(Min),'d','Color',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(Min),'d','Color',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(Min),'d','Color',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(Min),'d','Color',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(Min),'d','Color',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(Min),'d','Color',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(Min),'d','Color',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(Min),'d','Color',[0 0.8 1]);
+% 
+%     title('Daily Mins');
+%     ylabel('Min');
+%     legend(island,'Box','off');
+%     filename=[vars{i},'_DailyMins.eps'];
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     saveas(f10, filename, 'epsc');
+%     
+%     f11 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+% 
+%     plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(Max),'d','Color',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(Max),'d','Color',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(Max),'d','Color',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(Max),'d','Color',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(Max),'d','Color',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(Max),'d','Color',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(Max),'d','Color',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(Max),'d','Color',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(Max),'d','Color',[0 0.8 1]);
+% 
+%     title('Daily Maxes');
+%     ylabel('Max');
+%     legend(island,'Box','off');
+%     filename=[vars{i},'_DailyMaxes.eps'];
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     saveas(f11, filename, 'epsc');
+%     
+%     f12 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+% 
+%     plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(max_locs),'o','Color',[0 0.5 0.2],'MarkerFaceColor',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(max_locs),'o','Color',[0 0.5 0.4],'MarkerFaceColor',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(max_locs),'o','Color',[0 0.6 0.2],'MarkerFaceColor',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(max_locs),'o','Color',[0 0.6 0.3],'MarkerFaceColor',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(max_locs),'o','Color',[0 0.8 0.4],'MarkerFaceColor',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(max_locs),'o','Color',[0 0.3 0.8],'MarkerFaceColor',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(max_locs),'o','Color',[0 0.4 1],'MarkerFaceColor',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(max_locs),'o','Color',[0 0.6 1],'MarkerFaceColor',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(max_locs),'o','Color',[0 0.8 1],'MarkerFaceColor',[0 0.8 1]);
+% 
+%     title('Daily Max Times');
+%     ylabel('Time');
+%     datetick('y', 'HH:MM');
+%     legend(island,'Box','off');
+%     filename=[vars{i},'_DailyMaxTimes.eps'];
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     saveas(f12, filename, 'epsc');
+%     
+%     f13 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+% 
+%     plot(dayfigs.(island{2}).peakslat,dayfigs.(island{2}).(min_locs),'o','Color',[0 0.5 0.2],'MarkerFaceColor',[0 0.5 0.2]);
+%     plot(dayfigs.(island{3}).peakslat,dayfigs.(island{3}).(min_locs),'o','Color',[0 0.5 0.4],'MarkerFaceColor',[0 0.5 0.4]);
+%     plot(dayfigs.(island{4}).peakslat,dayfigs.(island{4}).(min_locs),'o','Color',[0 0.6 0.2],'MarkerFaceColor',[0 0.6 0.2]);
+%     plot(dayfigs.(island{5}).peakslat,dayfigs.(island{5}).(min_locs),'o','Color',[0 0.6 0.3],'MarkerFaceColor',[0 0.6 0.3]);
+%     plot(dayfigs.(island{6}).peakslat,dayfigs.(island{6}).(min_locs),'o','Color',[0 0.8 0.4],'MarkerFaceColor',[0 0.8 0.4]);
+%     plot(dayfigs.(island{7}).peakslat,dayfigs.(island{7}).(min_locs),'o','Color',[0 0.3 0.8],'MarkerFaceColor',[0 0.3 0.8]);
+%     plot(dayfigs.(island{8}).peakslat,dayfigs.(island{8}).(min_locs),'o','Color',[0 0.4 1],'MarkerFaceColor',[0 0.4 1]);
+%     plot(dayfigs.(island{9}).peakslat,dayfigs.(island{9}).(min_locs),'o','Color',[0 0.6 1],'MarkerFaceColor',[0 0.6 1]);
+%     plot(dayfigs.(island{10}).peakslat,dayfigs.(island{10}).(min_locs),'o','Color',[0 0.8 1],'MarkerFaceColor',[0 0.8 1]);
+% 
+%     title('Daily Min Times');
+%     ylabel('Time');
+%     datetick('y', 'HH:MM');
+%     legend(island,'Box','off');
+%     filename=[vars{i},'_DailyMinTimes.eps'];
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     saveas(f13, filename, 'epsc');
     
     clearvars -except folder analysisfilesDay analysisfilesNight vars peaks dayfigs island
 

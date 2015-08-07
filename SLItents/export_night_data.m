@@ -21,7 +21,8 @@ analysisfilesNight={'flint_analysis_night.mat'
 vars={'DOXY'
     'pH'
     'ORP'
-    'TC'};
+    'TC'
+    };
 
 for i=1:length(vars)
     var1=[vars{i},'mean'];
@@ -89,7 +90,7 @@ for i=1:length(vars)
         slopes=zeros(nightnum,6);
         rsqs=zeros(nightnum,6);
 
-        for iii=1:nightnum
+        for iii=1:nightnum-1
             num=num2str(iii);
             
             if strcmp(vars{i},'DOXY')==0
@@ -146,125 +147,125 @@ for i=1:length(vars)
 
     end
     
-    f1 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-    
-    errorbar(nightfigs.(island{1}).nightlat,dayfigs.(island{1}).(var1),nightfigs.(island{1}).(var2),'d','Color',[0 0.3 0.1]);
-    errorbar(nightfigs.(island{2}).nightlat,dayfigs.(island{2}).(var1),nightfigs.(island{2}).(var2),'d','Color',[0 0.5 0.2]);
-    errorbar(nightfigs.(island{3}).nightlat,dayfigs.(island{3}).(var1),nightfigs.(island{3}).(var2),'d','Color',[0 0.5 0.4]);
-    errorbar(nightfigs.(island{4}).nightlat,dayfigs.(island{4}).(var1),nightfigs.(island{4}).(var2),'d','Color',[0 0.6 0.2]);
-    errorbar(nightfigs.(island{5}).nightlat,dayfigs.(island{5}).(var1),nightfigs.(island{5}).(var2),'d','Color',[0 0.6 0.3]);
-    errorbar(nightfigs.(island{6}).nightlat,dayfigs.(island{6}).(var1),nightfigs.(island{6}).(var2),'d','Color',[0 0.8 0.4]);
-    errorbar(nightfigs.(island{7}).nightlat,dayfigs.(island{7}).(var1),nightfigs.(island{7}).(var2),'d','Color',[0 0.3 0.8]);
-    errorbar(nightfigs.(island{8}).nightlat,dayfigs.(island{8}).(var1),nightfigs.(island{8}).(var2),'d','Color',[0 0.4 1]);
-    errorbar(nightfigs.(island{9}).nightlat,dayfigs.(island{9}).(var1),nightfigs.(island{9}).(var2),'d','Color',[0 0.6 1]);
-    errorbar(nightfigs.(island{10}).nightlat,dayfigs.(island{10}).(var1),nightfigs.(island{10}).(var2),'d','Color',[0 0.8 1]);
-
-    title('Nightly Means');
-    ylabel('Mean');
-    legend(island, 'Box','off');
-    ax.XTick=[-20:3:20];
-    ax.XTickLabel=island;
-    filename=[vars{i},'_NightlyMeans.eps'];
-    saveas(f1, filename, 'epsc');
-    
-    f2 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-    
-    plot(nightfigs.(island{1}).nightlat,nightfigs.(island{1}).(var3),'d','Color',[0 0.3 0.1]);
-    plot(nightfigs.(island{2}).nightlat,nightfigs.(island{2}).(var3),'d','Color',[0 0.5 0.2]);
-    plot(nightfigs.(island{3}).nightlat,nightfigs.(island{3}).(var3),'d','Color',[0 0.5 0.4]);
-    plot(nightfigs.(island{4}).nightlat,nightfigs.(island{4}).(var3),'d','Color',[0 0.6 0.2]);
-    plot(nightfigs.(island{5}).nightlat,nightfigs.(island{5}).(var3),'d','Color',[0 0.6 0.3]);
-    plot(nightfigs.(island{6}).nightlat,nightfigs.(island{6}).(var3),'d','Color',[0 0.8 0.4]);
-    plot(nightfigs.(island{7}).nightlat,nightfigs.(island{7}).(var3),'d','Color',[0 0.3 0.8]);
-    plot(nightfigs.(island{8}).nightlat,nightfigs.(island{8}).(var3),'d','Color',[0 0.4 1]);
-    plot(nightfigs.(island{9}).nightlat,nightfigs.(island{9}).(var3),'d','Color',[0 0.6 1]);
-    plot(nightfigs.(island{10}).nightlat,nightfigs.(island{10}).(var3),'d','Color',[0 0.8 1]);
-
-    title('Nightly Integrated Totals');
-    ylabel('Integrated Total');
-    legend(island, 'Box','off');
-    ax.XTick=[-20:3:20];
-    ax.XTickLabel=island;
-    filename=[vars{i},'_NightlyTotals.eps'];
-    saveas(f2, filename, 'epsc');
-    
-    f3 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-    
-    plot(nightfigs.(island{1}).nightlat,nightfigs.(island{1}).(var4),'d','Color',[0 0.3 0.1]);
-    plot(nightfigs.(island{2}).nightlat,nightfigs.(island{2}).(var4),'d','Color',[0 0.5 0.2]);
-    plot(nightfigs.(island{3}).nightlat,nightfigs.(island{3}).(var4),'d','Color',[0 0.5 0.4]);
-    plot(nightfigs.(island{4}).nightlat,nightfigs.(island{4}).(var4),'d','Color',[0 0.6 0.2]);
-    plot(nightfigs.(island{5}).nightlat,nightfigs.(island{5}).(var4),'d','Color',[0 0.6 0.3]);
-    plot(nightfigs.(island{6}).nightlat,nightfigs.(island{6}).(var4),'d','Color',[0 0.8 0.4]);
-    plot(nightfigs.(island{7}).nightlat,nightfigs.(island{7}).(var4),'d','Color',[0 0.3 0.8]);
-    plot(nightfigs.(island{8}).nightlat,nightfigs.(island{8}).(var4),'d','Color',[0 0.4 1]);
-    plot(nightfigs.(island{9}).nightlat,nightfigs.(island{9}).(var4),'d','Color',[0 0.6 1]);
-    plot(nightfigs.(island{10}).nightlat,nightfigs.(island{10}).(var4),'d','Color',[0 0.8 1]);
-
-    title('Nightly Ratios');
-    ylabel('Ratio');
-    legend(island, 'Box','off');
-    ax.XTick=[-20:3:20];
-    ax.XTickLabel=island;
-    filename=[vars{i},'_NightlyRatios.eps'];
-    saveas(f3, filename, 'epsc');
-    
-    f4 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-    
-    plot(nightfigs.(island{1}).nightlat,nightfigs.(island{1}).(var5),'d','Color',[0 0.3 0.1]);
-    plot(nightfigs.(island{2}).nightlat,nightfigs.(island{2}).(var5),'d','Color',[0 0.5 0.2]);
-    plot(nightfigs.(island{3}).nightlat,nightfigs.(island{3}).(var5),'d','Color',[0 0.5 0.4]);
-    plot(nightfigs.(island{4}).nightlat,nightfigs.(island{4}).(var5),'d','Color',[0 0.6 0.2]);
-    plot(nightfigs.(island{5}).nightlat,nightfigs.(island{5}).(var5),'d','Color',[0 0.6 0.3]);
-    plot(nightfigs.(island{6}).nightlat,nightfigs.(island{6}).(var5),'d','Color',[0 0.8 0.4]);
-    plot(nightfigs.(island{7}).nightlat,nightfigs.(island{7}).(var5),'d','Color',[0 0.3 0.8]);
-    plot(nightfigs.(island{8}).nightlat,nightfigs.(island{8}).(var5),'d','Color',[0 0.4 1]);
-    plot(nightfigs.(island{9}).nightlat,nightfigs.(island{9}).(var5),'d','Color',[0 0.6 1]);
-    plot(nightfigs.(island{10}).nightlat,nightfigs.(island{10}).(var5),'d','Color',[0 0.8 1]);
-    
-    title('Nightly Slopes');
-    ylabel('Slopes');
-    legend(island, 'Box','off');
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    filename=[vars{i},'_NightlySlopes.eps'];
-    saveas(f4, filename, 'epsc');
-    
-    f5 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
-    hold on
-    grid on
-    ax=gca;
-    
-    plot(nightfigs.(island{1}).nightlat,nightfigs.(island{1}).(var6),'+','Color',[0 0.3 0.1]);
-    plot(nightfigs.(island{2}).nightlat,nightfigs.(island{2}).(var6),'+','Color',[0 0.5 0.2]);
-    plot(nightfigs.(island{3}).nightlat,nightfigs.(island{3}).(var6),'+','Color',[0 0.5 0.4]);
-    plot(nightfigs.(island{4}).nightlat,nightfigs.(island{4}).(var6),'+','Color',[0 0.6 0.2]);
-    plot(nightfigs.(island{5}).nightlat,nightfigs.(island{5}).(var6),'+','Color',[0 0.6 0.3]);
-    plot(nightfigs.(island{6}).nightlat,nightfigs.(island{6}).(var6),'+','Color',[0 0.8 0.4]);
-    plot(nightfigs.(island{7}).nightlat,nightfigs.(island{7}).(var6),'+','Color',[0 0.3 0.8]);
-    plot(nightfigs.(island{8}).nightlat,nightfigs.(island{8}).(var6),'+','Color',[0 0.4 1]);
-    plot(nightfigs.(island{9}).nightlat,nightfigs.(island{9}).(var6),'+','Color',[0 0.6 1]);
-    plot(nightfigs.(island{10}).nightlat,nightfigs.(island{10}).(var6),'+','Color',[0 0.8 1]);
-    
-    title('Nightly R-Squared values');
-    ylabel('R-Squared');
-    legend(island, 'Box','off');
-    ax.XTick=[-20:3:20];    
-    ax.XTickLabel=island;
-    filename=[vars{i},'_NightlyRsq.eps'];
-    saveas(f5, filename, 'epsc');   
+%     f1 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+%     
+%     errorbar(nightfigs.(island{1}).nightlat,dayfigs.(island{1}).(var1),nightfigs.(island{1}).(var2),'d','Color',[0 0.3 0.1]);
+%     errorbar(nightfigs.(island{2}).nightlat,dayfigs.(island{2}).(var1),nightfigs.(island{2}).(var2),'d','Color',[0 0.5 0.2]);
+%     errorbar(nightfigs.(island{3}).nightlat,dayfigs.(island{3}).(var1),nightfigs.(island{3}).(var2),'d','Color',[0 0.5 0.4]);
+%     errorbar(nightfigs.(island{4}).nightlat,dayfigs.(island{4}).(var1),nightfigs.(island{4}).(var2),'d','Color',[0 0.6 0.2]);
+%     errorbar(nightfigs.(island{5}).nightlat,dayfigs.(island{5}).(var1),nightfigs.(island{5}).(var2),'d','Color',[0 0.6 0.3]);
+%     errorbar(nightfigs.(island{6}).nightlat,dayfigs.(island{6}).(var1),nightfigs.(island{6}).(var2),'d','Color',[0 0.8 0.4]);
+%     errorbar(nightfigs.(island{7}).nightlat,dayfigs.(island{7}).(var1),nightfigs.(island{7}).(var2),'d','Color',[0 0.3 0.8]);
+%     errorbar(nightfigs.(island{8}).nightlat,dayfigs.(island{8}).(var1),nightfigs.(island{8}).(var2),'d','Color',[0 0.4 1]);
+%     errorbar(nightfigs.(island{9}).nightlat,dayfigs.(island{9}).(var1),nightfigs.(island{9}).(var2),'d','Color',[0 0.6 1]);
+%     errorbar(nightfigs.(island{10}).nightlat,dayfigs.(island{10}).(var1),nightfigs.(island{10}).(var2),'d','Color',[0 0.8 1]);
+% 
+%     title('Nightly Means');
+%     ylabel('Mean');
+%     legend(island, 'Box','off');
+%     ax.XTick=[-20:3:20];
+%     ax.XTickLabel=island;
+%     filename=[vars{i},'_NightlyMeans.eps'];
+%     saveas(f1, filename, 'epsc');
+%     
+%     f2 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+%     
+%     plot(nightfigs.(island{1}).nightlat,nightfigs.(island{1}).(var3),'d','Color',[0 0.3 0.1]);
+%     plot(nightfigs.(island{2}).nightlat,nightfigs.(island{2}).(var3),'d','Color',[0 0.5 0.2]);
+%     plot(nightfigs.(island{3}).nightlat,nightfigs.(island{3}).(var3),'d','Color',[0 0.5 0.4]);
+%     plot(nightfigs.(island{4}).nightlat,nightfigs.(island{4}).(var3),'d','Color',[0 0.6 0.2]);
+%     plot(nightfigs.(island{5}).nightlat,nightfigs.(island{5}).(var3),'d','Color',[0 0.6 0.3]);
+%     plot(nightfigs.(island{6}).nightlat,nightfigs.(island{6}).(var3),'d','Color',[0 0.8 0.4]);
+%     plot(nightfigs.(island{7}).nightlat,nightfigs.(island{7}).(var3),'d','Color',[0 0.3 0.8]);
+%     plot(nightfigs.(island{8}).nightlat,nightfigs.(island{8}).(var3),'d','Color',[0 0.4 1]);
+%     plot(nightfigs.(island{9}).nightlat,nightfigs.(island{9}).(var3),'d','Color',[0 0.6 1]);
+%     plot(nightfigs.(island{10}).nightlat,nightfigs.(island{10}).(var3),'d','Color',[0 0.8 1]);
+% 
+%     title('Nightly Integrated Totals');
+%     ylabel('Integrated Total');
+%     legend(island, 'Box','off');
+%     ax.XTick=[-20:3:20];
+%     ax.XTickLabel=island;
+%     filename=[vars{i},'_NightlyTotals.eps'];
+%     saveas(f2, filename, 'epsc');
+%     
+%     f3 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+%     
+%     plot(nightfigs.(island{1}).nightlat,nightfigs.(island{1}).(var4),'d','Color',[0 0.3 0.1]);
+%     plot(nightfigs.(island{2}).nightlat,nightfigs.(island{2}).(var4),'d','Color',[0 0.5 0.2]);
+%     plot(nightfigs.(island{3}).nightlat,nightfigs.(island{3}).(var4),'d','Color',[0 0.5 0.4]);
+%     plot(nightfigs.(island{4}).nightlat,nightfigs.(island{4}).(var4),'d','Color',[0 0.6 0.2]);
+%     plot(nightfigs.(island{5}).nightlat,nightfigs.(island{5}).(var4),'d','Color',[0 0.6 0.3]);
+%     plot(nightfigs.(island{6}).nightlat,nightfigs.(island{6}).(var4),'d','Color',[0 0.8 0.4]);
+%     plot(nightfigs.(island{7}).nightlat,nightfigs.(island{7}).(var4),'d','Color',[0 0.3 0.8]);
+%     plot(nightfigs.(island{8}).nightlat,nightfigs.(island{8}).(var4),'d','Color',[0 0.4 1]);
+%     plot(nightfigs.(island{9}).nightlat,nightfigs.(island{9}).(var4),'d','Color',[0 0.6 1]);
+%     plot(nightfigs.(island{10}).nightlat,nightfigs.(island{10}).(var4),'d','Color',[0 0.8 1]);
+% 
+%     title('Nightly Ratios');
+%     ylabel('Ratio');
+%     legend(island, 'Box','off');
+%     ax.XTick=[-20:3:20];
+%     ax.XTickLabel=island;
+%     filename=[vars{i},'_NightlyRatios.eps'];
+%     saveas(f3, filename, 'epsc');
+%     
+%     f4 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+%     
+%     plot(nightfigs.(island{1}).nightlat,nightfigs.(island{1}).(var5),'d','Color',[0 0.3 0.1]);
+%     plot(nightfigs.(island{2}).nightlat,nightfigs.(island{2}).(var5),'d','Color',[0 0.5 0.2]);
+%     plot(nightfigs.(island{3}).nightlat,nightfigs.(island{3}).(var5),'d','Color',[0 0.5 0.4]);
+%     plot(nightfigs.(island{4}).nightlat,nightfigs.(island{4}).(var5),'d','Color',[0 0.6 0.2]);
+%     plot(nightfigs.(island{5}).nightlat,nightfigs.(island{5}).(var5),'d','Color',[0 0.6 0.3]);
+%     plot(nightfigs.(island{6}).nightlat,nightfigs.(island{6}).(var5),'d','Color',[0 0.8 0.4]);
+%     plot(nightfigs.(island{7}).nightlat,nightfigs.(island{7}).(var5),'d','Color',[0 0.3 0.8]);
+%     plot(nightfigs.(island{8}).nightlat,nightfigs.(island{8}).(var5),'d','Color',[0 0.4 1]);
+%     plot(nightfigs.(island{9}).nightlat,nightfigs.(island{9}).(var5),'d','Color',[0 0.6 1]);
+%     plot(nightfigs.(island{10}).nightlat,nightfigs.(island{10}).(var5),'d','Color',[0 0.8 1]);
+%     
+%     title('Nightly Slopes');
+%     ylabel('Slopes');
+%     legend(island, 'Box','off');
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     filename=[vars{i},'_NightlySlopes.eps'];
+%     saveas(f4, filename, 'epsc');
+%     
+%     f5 = figure('units', 'inch', 'position', [1 1 8 12], 'visible','off');
+%     hold on
+%     grid on
+%     ax=gca;
+%     
+%     plot(nightfigs.(island{1}).nightlat,nightfigs.(island{1}).(var6),'+','Color',[0 0.3 0.1]);
+%     plot(nightfigs.(island{2}).nightlat,nightfigs.(island{2}).(var6),'+','Color',[0 0.5 0.2]);
+%     plot(nightfigs.(island{3}).nightlat,nightfigs.(island{3}).(var6),'+','Color',[0 0.5 0.4]);
+%     plot(nightfigs.(island{4}).nightlat,nightfigs.(island{4}).(var6),'+','Color',[0 0.6 0.2]);
+%     plot(nightfigs.(island{5}).nightlat,nightfigs.(island{5}).(var6),'+','Color',[0 0.6 0.3]);
+%     plot(nightfigs.(island{6}).nightlat,nightfigs.(island{6}).(var6),'+','Color',[0 0.8 0.4]);
+%     plot(nightfigs.(island{7}).nightlat,nightfigs.(island{7}).(var6),'+','Color',[0 0.3 0.8]);
+%     plot(nightfigs.(island{8}).nightlat,nightfigs.(island{8}).(var6),'+','Color',[0 0.4 1]);
+%     plot(nightfigs.(island{9}).nightlat,nightfigs.(island{9}).(var6),'+','Color',[0 0.6 1]);
+%     plot(nightfigs.(island{10}).nightlat,nightfigs.(island{10}).(var6),'+','Color',[0 0.8 1]);
+%     
+%     title('Nightly R-Squared values');
+%     ylabel('R-Squared');
+%     legend(island, 'Box','off');
+%     ax.XTick=[-20:3:20];    
+%     ax.XTickLabel=island;
+%     filename=[vars{i},'_NightlyRsq.eps'];
+%     saveas(f5, filename, 'epsc');   
     
     clearvars -except folder analysisfilesNight vars nightfigs island
 

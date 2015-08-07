@@ -1,4 +1,4 @@
-function [manta, vars] = manta2mat(filepath, daterange)
+function [manta, vars,ncol] = manta2mat(filepath, daterange)
 
 % [manta, vars] = manta2mat(filepath)
 % 

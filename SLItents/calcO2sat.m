@@ -7,7 +7,7 @@ function [O2sat] = calcO2sat(tempC, S)
 % The input tempC is in Celcius. 
 % The output units are umol/kg.
 
-% %Constants are from Benson and Krause (1994).
+% %Constants are from Benson and Krause (1984).
 % A0 = 5.80871;
 % A1 = 3.20291;
 % A2 = 4.17887;
