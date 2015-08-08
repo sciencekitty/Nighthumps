@@ -99,7 +99,7 @@ for i = 1:length(mantafiles)
     analysis.day(end)=analysis.day(end-1);
     
     % Zero baselines 
-    analysis.hrs=[1:length(analysis.nightDOXY)]'*5/60;
+    analysis.minute=[1:length(analysis.nightDOXY)]'*5;
     analysis.secs=[1:length(analysis.nightDOXY)]'*5*60;
     
     base=min(analysis.nightDOXY);

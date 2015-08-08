@@ -30,6 +30,11 @@ parfiles = {'flint_PAR.mat'
     'palmyra_PAR.mat'
     'washington_PAR.mat'};
 
+dawns = NaN(100);
+dawnind = 1;
+dusks = NaN(100);
+duskind = 1;
+
 for i = 1:length(mantafiles)
     name = parfiles{i};
     name = name(1:end-8);
@@ -54,14 +59,14 @@ for i = 1:length(mantafiles)
     
     % Break PAR data into individual days
     analysis.day=zeros(size(iuse));
-    night=1;
+    day=1;
     d=1;
     while d<=length(iuse)-1
         if iuse(d)==true
-            analysis.day(d)=night;
+            analysis.day(d)=day;
         elseif iuse(d)==false&&iuse(d+1)==true
-            night=night+1;
-            analysis.day(d+1)=night;
+            day=day+1;
+            analysis.day(d+1)=day;
         end
         d=d+1;
     end  
@@ -91,7 +96,6 @@ for i = 1:length(mantafiles)
         analysis.TCbase(:,ii)=analysis.TC(:,ii)-base(ii);
     end
     
-    
     imagename=[name,'_PAR.eps'];
     plotPARdata(par.SDN,par.PAR,name,imagename);
     imagename=[name,'_DOXY.eps'];
@@ -113,6 +117,10 @@ for i = 1:length(mantafiles)
     dayind=[dayind;length(analysis.day)];
     for ii=1:length(dayind)-1
         daynum=num2str(ii);
+        
+        dawns(dawnind) = analysis.SDN(dayind(ii));
+        dawnind = dawnind+1;
+        
         var1=['intPAR',daynum];
         var2=['intDOXY',daynum];
         var3=['ratioDOXY_PAR',daynum];
@@ -315,20 +323,20 @@ for i = 1:length(mantafiles)
 %    saveas(f2, filename, 'epsc');
     
     % isolate data when PAR < 1 (nighttime)
-    analysis.DOXY=interp1(manta.SDN, manta.DOXY, par.SDN);
-    analysis.pH=interp1(manta.SDN, manta.pH, par.SDN);
-    analysis.ORP=interp1(manta.SDN, manta.ORP,par.SDN);
-    analysis.TC=interp1(manta.SDN, manta.TC, par.SDN);
+    analysis.nightDOXY=interp1(manta.SDN, manta.DOXY, par.SDN);
+    analysis.nightpH=interp1(manta.SDN, manta.pH, par.SDN);
+    analysis.nightORP=interp1(manta.SDN, manta.ORP,par.SDN);
+    analysis.nghtTC=interp1(manta.SDN, manta.TC, par.SDN);
     
-    isnonan = ~isnan(analysis.DOXY(:,1));
+    isnonan = ~isnan(analysis.nightDOXY(:,1));
     iuse=inrange(par.PAR,[min(par.PAR) 1], 'includeleft');
     
-    analysis.DOXY=analysis.DOXY(iuse&isnonan,:);
-    analysis.SDN=par.SDN(iuse&isnonan,:);
-    analysis.PAR=par.PAR(iuse&isnonan,:);
-    analysis.pH=analysis.pH(iuse&isnonan,:);
-    analysis.ORP=analysis.ORP(iuse&isnonan,:);
-    analysis.TC=analysis.TC(iuse&isnonan,:);
+    analysis.nightDOXY=analysis.nightDOXY(iuse&isnonan,:);
+    analysis.nightSDN=par.SDN(iuse&isnonan,:);
+    analysis.nightPAR=par.PAR(iuse&isnonan,:);
+    analysis.nightpH=analysis.nightpH(iuse&isnonan,:);
+    analysis.nightORP=analysis.nightORP(iuse&isnonan,:);
+    analysis.nightTC=analysis.nightTC(iuse&isnonan,:);
     
     % Break PAR data into individual nights
     analysis.night=zeros(size(iuse));
@@ -347,26 +355,25 @@ for i = 1:length(mantafiles)
     analysis.night(end)=analysis.night(end-1);
     
     % Zero baselines 
-    analysis.minutes=[1:length(analysis.PAR)]'*5;
-    analysis.secs=[1:length(analysis.PAR)]'*5*60;
-    base=min(analysis.DOXY);
+    analysis.nightMinutes=[1:length(analysis.PAR)]'*5;
+    analysis.nightSecs=[1:length(analysis.PAR)]'*5*60;
+    base=min(analysis.nightDOXY);
     for ii=1:length(base)
-        analysis.DOXYbase(:,ii)=analysis.DOXY(:,ii)-base(ii);
+        analysis.nightDOXYbase(:,ii)=analysis.nightDOXY(:,ii)-base(ii);
+    end
+    base=min(analysis.nightpH);
+    for ii=1:length(base)
+        analysis.nightpHbase(:,ii)=analysis.nightpH(:,ii)-base(ii);
     end
     
-    base=min(analysis.pH);
+    base=min(analysis.nightORP);
     for ii=1:length(base)
-        analysis.pHbase(:,ii)=analysis.pH(:,ii)-base(ii);
-    end
-    
-    base=min(analysis.ORP);
-    for ii=1:length(base)
-        analysis.ORPbase(:,ii)=analysis.ORP(:,ii)-base(ii);
+        analysis.nightORPbase(:,ii)=analysis.nightORP(:,ii)-base(ii);
     end
     
     base=min(analysis.TC);
     for ii=1:length(base)
-        analysis.TCbase(:,ii)=analysis.TC(:,ii)-base(ii);
+        analysis.nightTCbase(:,ii)=analysis.nightTC(:,ii)-base(ii);
     end
     
     [~,nightind]=unique(analysis.night);
@@ -490,14 +497,13 @@ for i = 1:length(mantafiles)
 
     end
    
-    f_name = [name,'_analysis.mat'];
+    f_name = [name,'_analysis_day.mat'];
     
     save(f_name, 'analysis', 'name');
     
     close all
     
-    
-    clearvars -except folder mantafiles parfiles
+    clearvars -except folder mantafiles parfiles dawns dusks
     
     
 end
