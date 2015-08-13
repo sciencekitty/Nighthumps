@@ -1,6 +1,8 @@
 % analyze_manta_data.m
 
-% Analyze manta and PAR data to normalize DO to PAR.
+% Analyze manta data using days based on PAR signal. PAR >= 1 is daytime,
+% while PAR < 1 is night time. This script also gets the date and time for
+% sunrise and sunset for each island. 
 
 clear all
 close all
@@ -67,7 +69,7 @@ for i = 1:length(mantafiles)
         base=min(analysis.day.(vars{ii}));
         basevar=[vars{ii},'base'];
             for iii=1:length(base)
-                analysis.day.(basevar)(:,ii)=analysis.day.(vars{ii})(:,iii)-base(iii);
+                analysis.day.(basevar)(:,iii)=analysis.day.(vars{ii})(:,iii)-base(iii);
             end
     end
     
@@ -98,7 +100,7 @@ for i = 1:length(mantafiles)
         base=min(analysis.night.(vars{ii}));
         basevar=[vars{ii},'base'];
             for iii=1:length(base)
-                analysis.night.(basevar)(:,ii)=analysis.night.(vars{ii})(:,iii)-base(iii);
+                analysis.night.(basevar)(:,iii)=analysis.night.(vars{ii})(:,iii)-base(iii);
             end
     end
     
@@ -163,6 +165,8 @@ for i = 1:length(mantafiles)
             
             % Daily values
             PAR=analysis.day.PAR(dayind(ii):dayind(ii+1),:);
+            basename=[vars{iii},'base'];
+            basevar=analysis.day.(basename)(dayind(ii):dayind(ii+1),:);
             var=analysis.day.(vars{iii})(dayind(ii):dayind(ii+1),:);
             
             % Max, min, and means
@@ -184,7 +188,7 @@ for i = 1:length(mantafiles)
             var0=['intPAR',daynum];
             analysis.day.(var0)=[trapz(analysis.day.secs(dayind(ii):dayind(ii+1),1),PAR),...
                 NaN(1,5)]';
-            analysis.day.(var5)=trapz(analysis.day.secs(dayind(ii):dayind(ii+1),:),var);
+            analysis.day.(var5)=trapz(analysis.day.secs(dayind(ii):dayind(ii+1),:),basevar);
 
             % Integration ratios
             analysis.day.(var6)=analysis.day.(var5)./analysis.day.(var0)(1,1);
@@ -238,7 +242,10 @@ for i = 1:length(mantafiles)
             
             % Daily values
             DOXY=analysis.night.DOXY(nightind(ii):nightind(ii+1),:);
+            basename=[vars{iii},'base'];
+            basevar=analysis.night.(basename)(nightind(ii):nightind(ii+1),:);
             var=analysis.night.(vars{iii})(nightind(ii):nightind(ii+1),:);
+            secs=analysis.night.secs(nightind(ii):nightind(ii+1),:);
             
             % Max, min, and means
             analysis.night.(var1)=max(var);
@@ -247,7 +254,7 @@ for i = 1:length(mantafiles)
             analysis.night.(var4)=std(var);
 
             % Trapezoidal numerical integration
-            analysis.night.(var5)=trapz(analysis.night.secs(nightind(ii):nightind(ii+1),:),var);
+            analysis.night.(var5)=trapz(secs,basevar);
 
             % Integration ratios
             var0=['intDOXY',nightnum];
