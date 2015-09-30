@@ -53,7 +53,7 @@ if nargin < 2 || isempty(normalise), normalise = false; end
 
 U = ones(1,N*m);
 Y = X(:,:);
-Y = Y-mean(Y,2)*U;
+Y = Y-nanmean(Y,2)*U;
 if normalise
     Y = Y./(std(Y,[],2)*U);
 end

@@ -55,51 +55,64 @@
 %
 %% Parameters
 
-ntrials   = 10;     % number of trials
-nobs      = 1000;   % number of observations per trial
+clear all
+
+ntrials   = 1;     % number of trials
+nobs      = 1411;  %1549; % number of observations per trial
 
 regmode   = 'OLS';  % VAR model estimation regression mode ('OLS', 'LWR' or empty for default)
 icregmode = 'LWR';  % information criteria regression mode ('OLS', 'LWR' or empty for default)
 
-morder    = 'AIC';  % model order to use ('actual', 'AIC', 'BIC' or supplied numerical value)
+morder    = 'BIC';  % model order to use ('actual', 'AIC', 'BIC' or supplied numerical value)
 momax     = 20;     % maximum model order for model order estimation
 
-acmaxlags = 1000;   % maximum autocovariance lags (empty for automatic calculation)
+acmaxlags = '';   % maximum autocovariance lags (empty for automatic calculation)
 
 tstat     = '';     % statistical test for MVGC:  'F' for Granger's F-test (default) or 'chi2' for Geweke's chi2 test
 alpha     = 0.05;   % significance level for significance test
 mhtc      = 'FDR';  % multiple hypothesis test correction (see routine 'significance')
 
-fs        = 200;    % sample rate (Hz)
+fs        = 5;    % sample rate (min)
 fres      = [];     % frequency resolution (empty for automatic calculation)
 
 seed      = 0;      % random seed (0 for unseeded)
 
-%% Generate VAR test data (<mvgc_schema.html#3 |A3|>)
-%
-% _*Note:*_ This is where you would read in your own time series data; it should
-% be assigned to the variable |X| (see below and <mvgchelp.html#4 Common
-% variable names and data structures>).
+%% Load data
 
-% Seed random number generator.
+load('Palmyra_Yui.mat');
 
-rng_seed(seed);
+%X = [RT4.TC',RT4.DOXY',RT4.pH',RT4.PSAL',RT4.Pres',RT4.U0',RT4.PAR',RT4.NEP']';
+X = [LL.TC',LL.DOXY',LL.pH',LL.PSAL',LL.Pres',LL.U0',LL.PAR',LL.NEP']';
 
-% Get VAR coefficients for 5-node test network.
 
-AT = var5_test;
-nvars = size(AT,1); % number of variables
+times=datetime(LL.SDN,'ConvertFrom','datenum');
+vars={'TC','DOXY','pH','PSAL','Pres','U0','PAR','NEP'};
 
-% Residuals covariance matrix.
+xlen=size(X,1);
+ylen=size(X,2)-1;
+Y=zeros(xlen,ylen);
 
-SIGT = eye(nvars);
-
-% Generate multi-trial VAR time series data with normally distributed residuals
-% for specified coefficients and covariance matrix.
-
-ptic('\n*** var_to_tsdata... ');s;
-X = var_to_tsdata(AT,SIGT,nobs,ntrial);
-ptoc;
+for i=1:size(X,1)
+    
+    nan=isnan(X(i,:));
+    X(i,nan)=nanmean(X(i,:));
+    Y(i,:)=diff(X(i,:));
+    
+    figure(4); clf;
+    plot(times(1:end-1),Y(i,:));
+    name=['LL Differenced Data ',vars{i}];
+    title(name);
+    legend off;
+    saveas(figure(4),name,'png');
+    
+    figure(5); clf;
+    plot(times,X(i,:));
+    name=['LL Raw Data ',vars{i}];
+    legend off;
+    title(name);
+    saveas(figure(5),name,'png');
+end
+X=Y;
 
 %% Model order estimation (<mvgc_schema.html#3 |A2|>)
 
@@ -112,10 +125,10 @@ ptoc('*** tsdata_to_infocrit took ');
 % Plot information criteria.
 
 figure(1); clf;
-plot_tsdata([AIC BIC]',{'AIC','BIC'},1/fs);
+plot_tsdata([AIC BIC]',{'AIC','BIC'});
 title('Model order estimation');
 
-amo = size(AT,3); % actual model order
+amo = size(X,3); % actual model order
 
 fprintf('\nbest model order (AIC) = %d\n',moAIC);
 fprintf('best model order (BIC) = %d\n',moBIC);
@@ -144,7 +157,7 @@ ptic('\n*** tsdata_to_var... ');
 [A,SIG] = tsdata_to_var(X,morder,regmode);
 ptoc;
 
-% Check for failed regression
+% Check for failed regressionC
 
 assert(~isbad(A),'VAR estimation failed');
 
@@ -186,6 +199,7 @@ assert(~isbad(F,false),'GC calculation failed');
 % Significance test using theoretical null distribution, adjusting for multiple
 % hypotheses.
 
+nvars = size(X,1);
 pval = mvgc_pval(F,morder,nobs,ntrials,1,1,nvars-2,tstat); % take careful note of arguments!
 sig  = significance(pval,alpha,mhtc);
 
@@ -196,11 +210,13 @@ subplot(1,3,1);
 plot_pw(F);
 title('Pairwise-conditional GC');
 subplot(1,3,2);
-plot_pw(pval);
+cm='jet';
+plot_pw(pval,cm);
 title('p-values');
 subplot(1,3,3);
 plot_pw(sig);
 title(['Significant at p = ' num2str(alpha)])
+saveas(figure(2),'LL pvals','png');
 
 % For good measure we calculate Seth's causal density (cd) measure - the mean
 % pairwise-conditional causality. We don't have a theoretical sampling
@@ -243,5 +259,8 @@ else
     fprintf(2,'WARNING: high maximum absolute difference = %e.2 (> %.2e)\n',mad,madthreshold);
 end
 
+save('LL_GC.mat','G','F','f','sig','pval','info');
+writetable((array2table(pval,'VariableNames',vars,'RowNames',vars)),'LL-pval.csv');
+writetable((array2table(sig,'VariableNames',vars,'RowNames',vars)),'LL-sig.csv');
 %%
 % <mvgc_demo.html back to top>

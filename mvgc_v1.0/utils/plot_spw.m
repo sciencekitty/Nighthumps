@@ -56,7 +56,7 @@ if ~isempty(frange)
 end
 xlims = [lam(1) lam(end)];
 ylims = [min(P(:)) 1.1*max(P(:))];
-if isempty(fs), xlab = 'normalised frequency'; else xlab = 'frequency (Hz)'; end
+if isempty(fs), xlab = 'normalised frequency'; else xlab = 'frequency (min)'; end
 
 k = 0;
 for i = 1:n
@@ -66,10 +66,13 @@ for i = 1:n
             subplot(n,n,k);
             plot(lam,squeeze(P(i,j,:)));
             axis('square');
+            ax = gca;
+            ax.FontSize = 4;
             xlim(xlims);
             ylim(ylims);
-            xlabel(xlab);
-            ylabel(sprintf('%d -> %d',j,i));
+%             xlabel(xlab);
+            ylabel(sprintf('%d -> %d',j,i),'fontsize',6);
+            
         end
     end
 end

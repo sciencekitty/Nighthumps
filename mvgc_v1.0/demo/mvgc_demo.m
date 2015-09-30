@@ -61,7 +61,7 @@ nobs      = 1000;   % number of observations per trial
 regmode   = 'OLS';  % VAR model estimation regression mode ('OLS', 'LWR' or empty for default)
 icregmode = 'LWR';  % information criteria regression mode ('OLS', 'LWR' or empty for default)
 
-morder    = 9;  % model order to use ('actual', 'AIC', 'BIC' or supplied numerical value)
+morder    = 'AIC';  % model order to use ('actual', 'AIC', 'BIC' or supplied numerical value)
 momax     = 20;     % maximum model order for model order estimation
 
 acmaxlags = 1000;   % maximum autocovariance lags (empty for automatic calculation)
@@ -82,25 +82,24 @@ seed      = 0;      % random seed (0 for unseeded)
 % variable names and data structures>).
 
 % Seed random number generator.
-% 
-% rng_seed(seed);
-% 
-% % Get VAR coefficients for 5-node test network.
-% 
-% AT = var5_test;
-% nvars = size(AT,1); % number of variables
-% 
-% % Residuals covariance matrix.
-% 
-% SIGT = eye(nvars);
+
+rng_seed(seed);
+
+% Get VAR coefficients for 5-node test network.
+
+AT = var5_test;
+nvars = size(AT,1); % number of variables
+
+% Residuals covariance matrix.
+
+SIGT = eye(nvars);
 
 % Generate multi-trial VAR time series data with normally distributed residuals
 % for specified coefficients and covariance matrix.
 
-load('Palmyra_Yui.mat');
-% ptic('\n*** var_to_tsdata... ');s;
-X = [LL.TC',LL.DOXY',LL.pH',LL.PSAL',LL.Pres',LL.U0',LL.PAR',LL.NEP'];
-% ptoc;
+ptic('\n*** var_to_tsdata... ');
+X = var_to_tsdata(AT,SIGT,nobs,ntrials);
+ptoc;
 
 %% Model order estimation (<mvgc_schema.html#3 |A2|>)
 

@@ -43,4 +43,5 @@ if nargin < 2 || isempty(fs);
     fs = 2*pi; % normalised
 end
 
-freqs = linspace(0,fs/2,fres+1)';
+%freqs = linspace(0,fs/2,fres+1)';
+freqs = linspace(0,fs,fres+1)';
