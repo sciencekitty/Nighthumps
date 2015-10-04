@@ -1,0 +1,32 @@
+% extract_and_QC_weatherdata.m
+
+clear all
+close all
+
+% folder path where text files are kept
+folder = '/Users/Sandi/Documents/Nighthumps/SLItents/raw_tent_text_files/';
+% list of text file names for physical data
+txtfiles = {'0N155W-2010'
+    '5N155W-2010'
+    '8N155W-2010'};
+
+for i = 1:size(txtfiles,1)
+    island_name = txtfiles(i,:);
+    island_name = island_name(1:end-13);
+    
+    trex = readtable([folder,txtfiles(i,:)]);
+    
+
+    f_name = [island_name,'_buoy.mat'];
+    save(f_name, 'buoy', 'island_name');
+    close all
+
+    clearvars -except buoy folder txtfiles
+end
+
+
+
+
+
+
+

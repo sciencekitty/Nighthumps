@@ -1,4 +1,3 @@
-
 TimeTAHT,TemperatureF,Dew PointF,Humidity,Sea Level PressureIn,VisibilityMPH,Wind Direction,Wind SpeedMPH,Gust SpeedMPH,PrecipitationIn,Events,Conditions,WindDirDegrees,DateUTC<br />
 1:00 AM,73.4,64.4,73,30.01,6.2,South,5.8,-,N/A,,Partly Cloudy,170,2011-09-03 11:00:00<br />
 2:00 AM,75,65,63,30.02,12,ENE,4.6,,,,Scattered Clouds,70,2011-09-03 12:00:00<br />
@@ -6,27 +5,27 @@ TimeTAHT,TemperatureF,Dew PointF,Humidity,Sea Level PressureIn,VisibilityMPH,Win
 3:00 AM,73.4,62.6,69,30.01,6.2,Variable,3.5,-,N/A,,Partly Cloudy,0,2011-09-03 13:00:00<br />
 5:00 AM,74,67,71,30.03,34,SE,8.9,,,,Clear,140,2011-09-03 15:00:00<br />
 6:00 AM,73.4,66.2,78,30.04,6.2,Variable,2.3,-,N/A,,Partly Cloudy,0,2011-09-03 16:00:00<br />
-7:00 AM,77.0,66.2,69,30.06,6.2,SSE,3.5,-,N/A,,Partly Cloudy,150,2011-09-03 17:00:00<br />
+7:00 AM,77,66.2,69,30.06,6.2,SSE,3.5,-,N/A,,Partly Cloudy,150,2011-09-03 17:00:00<br />
 8:00 AM,80,68,58,30.09,19,West,1.2,,,,Scattered Clouds,270,2011-09-03 18:00:00<br />
-8:00 AM,80.6,68.0,65,30.06,6.2,Variable,1.2,-,N/A,,Scattered Clouds,0,2011-09-03 18:00:00<br />
-9:00 AM,82.4,68.0,62,30.06,6.2,WNW,3.5,-,N/A,,Partly Cloudy,300,2011-09-03 19:00:00<br />
-10:00 AM,84.2,68.0,58,30.06,6.2,Variable,6.9,-,N/A,,Partly Cloudy,0,2011-09-03 20:00:00<br />
+8:00 AM,80.6,68,65,30.06,6.2,Variable,1.2,-,N/A,,Scattered Clouds,0,2011-09-03 18:00:00<br />
+9:00 AM,82.4,68,62,30.06,6.2,WNW,3.5,-,N/A,,Partly Cloudy,300,2011-09-03 19:00:00<br />
+10:00 AM,84.2,68,58,30.06,6.2,Variable,6.9,-,N/A,,Partly Cloudy,0,2011-09-03 20:00:00<br />
 11:00 AM,85,70,53,30.06,16,NE,31.3,,,,Partly Cloudy,40,2011-09-03 21:00:00<br />
-11:00 AM,86.0,69.8,58,30.04,6.2,NE,16.1,-,N/A,,Scattered Clouds,40,2011-09-03 21:00:00<br />
+11:00 AM,86,69.8,58,30.04,6.2,NE,16.1,-,N/A,,Scattered Clouds,40,2011-09-03 21:00:00<br />
 11:07 AM,84.2,69.8,62,30.04,6.2,NNE,18.4,32.2,N/A,,Scattered Clouds,30,2011-09-03 21:07:00<br />
-12:00 PM,84.2,68.0,58,30.04,6.2,NE,13.8,-,N/A,,Scattered Clouds,50,2011-09-03 22:00:00<br />
-1:00 PM,86.0,71.6,62,30.04,6.2,NE,16.1,-,N/A,,Partly Cloudy,40,2011-09-03 23:00:00<br />
+12:00 PM,84.2,68,58,30.04,6.2,NE,13.8,-,N/A,,Scattered Clouds,50,2011-09-03 22:00:00<br />
+1:00 PM,86,71.6,62,30.04,6.2,NE,16.1,-,N/A,,Partly Cloudy,40,2011-09-03 23:00:00<br />
 2:00 PM,85,69,51,30.01,16,NNE,17.3,,,,Partly Cloudy,30,2011-09-04 00:00:00<br />
-2:00 PM,86.0,69.8,58,30.01,6.2,NNE,17.3,-,N/A,,Partly Cloudy,30,2011-09-04 00:00:00<br />
+2:00 PM,86,69.8,58,30.01,6.2,NNE,17.3,-,N/A,,Partly Cloudy,30,2011-09-04 00:00:00<br />
 3:00 PM,84.2,69.8,62,29.98,6.2,NNE,16.1,-,N/A,,Partly Cloudy,30,2011-09-04 01:00:00<br />
 4:00 PM,84.2,66.2,55,29.98,6.2,Variable,10.4,-,N/A,,Partly Cloudy,0,2011-09-04 02:00:00<br />
-5:00 PM,83,67,50,30.00,19,NE,26.8,,,,Scattered Clouds,40,2011-09-04 03:00:00<br />
-5:00 PM,82.4,68.0,62,29.98,6.2,NE,13.8,-,N/A,,Partly Cloudy,40,2011-09-04 03:00:00<br />
+5:00 PM,83,67,50,30,19,NE,26.8,,,,Scattered Clouds,40,2011-09-04 03:00:00<br />
+5:00 PM,82.4,68,62,29.98,6.2,NE,13.8,-,N/A,,Partly Cloudy,40,2011-09-04 03:00:00<br />
 6:00 PM,80.6,66.2,61,30.01,6.2,NE,13.8,-,N/A,,Partly Cloudy,40,2011-09-04 04:00:00<br />
 7:00 PM,80.6,64.4,58,30.04,6.2,NE,12.7,-,N/A,,Partly Cloudy,40,2011-09-04 05:00:00<br />
 8:00 PM,79,67,58,30.05,16,ENE,6.7,,,,Scattered Clouds,70,2011-09-04 06:00:00<br />
 8:00 PM,78.8,66.2,65,30.04,6.2,Variable,3.5,-,N/A,,Partly Cloudy,0,2011-09-04 06:00:00<br />
-9:00 PM,77.0,66.2,69,30.06,6.2,Calm,Calm,-,N/A,,Partly Cloudy,0,2011-09-04 07:00:00<br />
-10:00 PM,75.2,66.2,73,30.06,6.2,Calm,Calm,-,N/A,,Partly Cloudy,0,2011-09-04 08:00:00<br />
-11:00 PM,75,66,68,30.07,12,Calm,Calm,,,,Scattered Clouds,,2011-09-04 09:00:00<br />
-11:00 PM,75.2,66.2,73,30.06,6.2,Calm,Calm,-,N/A,,Partly Cloudy,0,2011-09-04 09:00:00<br />
+9:00 PM,77,66.2,69,30.06,6.2,0,0,-,N/A,,Partly Cloudy,0,2011-09-04 07:00:00<br />
+10:00 PM,75.2,66.2,73,30.06,6.2,0,0,-,N/A,,Partly Cloudy,0,2011-09-04 08:00:00<br />
+11:00 PM,75,66,68,30.07,12,0,0,,,,Scattered Clouds,,2011-09-04 09:00:00<br />
+11:00 PM,75.2,66.2,73,30.06,6.2,0,0,-,N/A,,Partly Cloudy,0,2011-09-04 09:00:00<br />
