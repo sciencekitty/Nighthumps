@@ -1,0 +1,648 @@
+% extract_and_QC_manta_data.m
+
+% Extract manta data from text file, and then QC the data.
+% Cover data translated into numerical data. 
+% 1 = Coral
+% 2 = Algae
+% 3 = Sand
+% 4 = Ambient
+
+clear all
+close all
+
+% folder path where text files are kept
+folder = '/Users/Sandi/Documents/Nighthumps/SLItents/raw_tent_text_files/';
+% list of text file names for manta data
+txtfiles = {'Birch-8-8-14.txt'
+    'Birch-8-15-14.txt'};
+
+% Trimmed the first 2 hours off the start and end of each dataset to reduce
+% variability
+for i = 1:length(txtfiles)
+    island_name = txtfiles{i};
+    island_name = island_name(1:end-4);
+    switch txtfiles{i}
+        case 'Birch-8-8-14.txt'
+            daterange = [datenum(2014,8,8,14,50,0) datenum(2014,8,11,12,0,0)];
+        case 'Birch-8-15-14.txt'
+            daterange = [datenum(2014,8,15,14,50,0) datenum(2014,8,18,10,40,0)];
+    end
+    
+    [trex,~,sensors] = manta2mat([folder,txtfiles{i}]);
+    
+    % Data has 0s in there randomly. change it all to NaNs
+    trex.DOXY = trex.O2;
+    trex.DOXY(trex.DOXY == 0) = NaN;
+    trex.O2satper(trex.O2satper == 0) = NaN;
+    
+    trex.pH = trex.pHinsitu;
+    trex.pH(trex.pH == 0) = NaN;
+    trex.ORP(trex.ORP == 0) = NaN;
+    trex.VpH(trex.VpH == 0) = NaN;
+    trex.COND(trex.COND == 0) = NaN;
+    
+    % Adjust data to set the mean for each sensor to the mean
+    % of all sensors.
+    baseline = nanmean(nanmean(trex.O2satper(:,1:sensors)));
+    adj = baseline - nanmean(trex.O2satper,1);
+    trex.O2satper = bsxfun(@plus,trex.O2satper,adj);
+    baselinesat=nanmean(trex.O2satper,1);
+    
+    baseline = nanmean(nanmean(trex.pH(:,1:sensors)));
+    adj = baseline - nanmean(trex.pH,1);
+    trex.pH = bsxfun(@plus,trex.pH,adj);
+    baselineph=nanmean(trex.pH,1);
+    
+    baseline = nanmean(nanmean(trex.ORP(:,1:sensors)));
+    adj = baseline - nanmean(trex.ORP,1);
+    trex.ORP = bsxfun(@plus,trex.ORP,adj);
+    baselineorp=nanmean(trex.ORP,1);
+    
+    baseline = nanmean(nanmean(trex.TC(:,1:sensors)));
+    adj = baseline - nanmean(trex.TC,1);
+    trex.TC = bsxfun(@plus,trex.TC,adj);
+    baselinetc=nanmean(trex.TC,1);
+    
+    baseline = nanmean(nanmean(trex.VpH(:,1:sensors)));
+    adj = baseline - nanmean(trex.VpH,1);
+    trex.VpH = bsxfun(@plus,trex.VpH,adj);
+    baselinevph=nanmean(trex.VpH,1);
+    
+    baseline = nanmean(nanmean(trex.COND(:,1:sensors)));
+    adj = baseline - nanmean(trex.COND,1);
+    trex.COND = bsxfun(@plus,trex.COND,adj);
+    baselinecond=nanmean(trex.COND,1);
+    
+    
+    % Make 20th O2satper 100%, arbitrarily.
+%     O2per_offset = 100 - trex.O2satper(20,:);
+    
+    % presize stats matrices. 
+
+%     nanlength = 15;
+% 
+%     DOXYmax = NaN(nanlength,sensors);
+%     DOXYmax_locs = NaN(nanlength,sensors);
+%     DOXYmin = NaN(nanlength,sensors);
+%     DOXYmin_locs = NaN(nanlength,sensors);
+%     dDOXYmax = NaN(nanlength,sensors);
+%     dDOXYmax_locs = NaN(nanlength,sensors);
+%     dDOXYmin = NaN(nanlength,sensors);
+%     dDOXYmin_locs = NaN(nanlength,sensors);
+%     DOXYmeans = zeros(1,sensors);
+%     DOXYstdevs = zeros(1,sensors);
+% 
+%     pHmax = NaN(nanlength,sensors);
+%     pHmax_locs = NaN(nanlength,sensors);
+%     pHmin = NaN(nanlength,sensors);
+%     pHmin_locs = NaN(nanlength,sensors);
+%     dpHmax = NaN(nanlength,sensors);
+%     dpHmax_locs = NaN(nanlength,sensors);
+%     dpHmin = NaN(nanlength,sensors);
+%     dpHmin_locs = NaN(nanlength,sensors);
+%     pHmeans = zeros(1,sensors);
+%     pHstdevs = zeros(1,sensors);
+% 
+%     ORPmax = NaN(nanlength,sensors);
+%     ORPmax_locs = NaN(nanlength,sensors);
+%     ORPmin = NaN(nanlength,sensors);
+%     ORPmin_locs = NaN(nanlength,sensors);
+%     dORPmax = NaN(nanlength,sensors);
+%     dORPmax_locs = NaN(nanlength,sensors);
+%     dORPmin = NaN(nanlength,sensors);
+%     dORPmin_locs = NaN(nanlength,sensors);
+%     ORPmeans = zeros(1,sensors);
+%     ORPstdevs = zeros(1,sensors);
+% 
+%     TCmax = NaN(nanlength,sensors);
+%     TCmax_locs = NaN(nanlength,sensors);
+%     TCmin = NaN(nanlength,sensors);
+%     TCmin_locs = NaN(nanlength,sensors);
+%     dTCmax = NaN(nanlength,sensors);
+%     dTCmax_locs = NaN(nanlength,sensors);
+%     dTCmin = NaN(nanlength,sensors);
+%     dTCmin_locs = NaN(nanlength,sensors);
+%     TCmeans = zeros(1,sensors);
+%     TCstdevs = zeros(1,sensors);
+%     
+%     VpHmax = NaN(nanlength,sensors);
+%     VpHmax_locs = NaN(nanlength,sensors);
+%     VpHmin = NaN(nanlength,sensors);
+%     VpHmin_locs = NaN(nanlength,sensors);
+%     dVpHmax = NaN(nanlength,sensors);
+%     dVpHmax_locs = NaN(nanlength,sensors);
+%     dVpHmin = NaN(nanlength,sensors);
+%     dVpHmin_locs = NaN(nanlength,sensors);
+%     VpHmeans = zeros(1,sensors);
+%     VpHstdevs = zeros(1,sensors);
+%     
+%     CONDmax = NaN(nanlength,sensors);
+%     CONDmax_locs = NaN(nanlength,sensors);
+%     CONDmin = NaN(nanlength,sensors);
+%     CONDmin_locs = NaN(nanlength,sensors);
+%     dCONDmax = NaN(nanlength,sensors);
+%     dCONDmax_locs = NaN(nanlength,sensors);
+%     dCONDmin = NaN(nanlength,sensors);
+%     dCONDmin_locs = NaN(nanlength,sensors);
+%     CONDmeans = zeros(1,sensors);
+%     CONDstdevs = zeros(1,sensors);
+%     
+%     PSALmax = NaN(nanlength,sensors);
+%     PSALmax_locs = NaN(nanlength,sensors);
+%     PSALmin = NaN(nanlength,sensors);
+%     PSALmin_locs = NaN(nanlength,sensors);
+%     dPSALmax = NaN(nanlength,sensors);
+%     dPSALmax_locs = NaN(nanlength,sensors);
+%     dPSALmin = NaN(nanlength,sensors);
+%     dPSALmin_locs = NaN(nanlength,sensors);
+%     PSALmeans = zeros(1,sensors);
+%     PSALstdevs = zeros(1,sensors);
+%     
+%     DENSmax = NaN(nanlength,sensors);
+%     DENSmax_locs = NaN(nanlength,sensors);
+%     DENSmin = NaN(nanlength,sensors);
+%     DENSmin_locs = NaN(nanlength,sensors);
+%     dDENSmax = NaN(nanlength,sensors);
+%     dDENSmax_locs = NaN(nanlength,sensors);
+%     dDENSmin = NaN(nanlength,sensors);
+%     dDENSmin_locs = NaN(nanlength,sensors);
+%     DENSmeans = zeros(1,sensors);
+%     DENSstdevs = zeros(1,sensors);
+    
+    % interpolate onto 5min intervals
+    
+    manta.SDN = [daterange(1):datenum(0,0,0,0,5,0):daterange(end)]';
+    manta.SENS_ID = trex.SENS_ID(1,:);
+    iuse = inrange(trex.SDN(:,1), [manta.SDN(1) manta.SDN(end)]);
+     
+    for ii = 1:sensors 
+        % look for non-NaN data
+        inonanO = ~isnan(trex.DOXY(:,ii));
+        inonanpH = ~isnan(trex.pH(:,ii));
+        inonanOrp = ~isnan(trex.ORP(:,ii));
+        inonanTC = ~isnan(trex.TC(:,ii));
+        inonanVpH = ~isnan(trex.VpH(:,ii));
+        inonanCOND = ~isnan(trex.COND(:,ii));
+        
+        iuse = inrange(trex.SDN(:,ii), [manta.SDN(1) manta.SDN(end)]);
+        
+        totiuse = iuse&inonanO&inonanpH&inonanOrp&inonanTC&inonanVpH&inonanCOND;
+        
+        manta.DOXY(:,ii) = interp1(trex.SDN(totiuse,ii),trex.DOXY(totiuse,ii), manta.SDN);
+        manta.O2satper(:,ii) = interp1(trex.SDN(totiuse,ii),trex.O2satper(totiuse,ii), manta.SDN);
+        manta.pH(:,ii) = interp1(trex.SDN(totiuse,ii),trex.pH(totiuse,ii), manta.SDN);
+        manta.ORP(:,ii) = interp1(trex.SDN(totiuse,ii),trex.ORP(totiuse,ii), manta.SDN);
+        manta.TC(:,ii) = interp1(trex.SDN(totiuse,ii),trex.TC(totiuse,ii), manta.SDN);
+        manta.VpH(:,ii) = interp1(trex.SDN(totiuse,ii),trex.VpH(totiuse,ii), manta.SDN);
+        manta.COND(:,ii) = interp1(trex.SDN(totiuse,ii),trex.COND(totiuse,ii), manta.SDN);
+        
+        % Calculate salinity from conductivity [uS/cm].
+        nantc = isnan(manta.TC(:,ii));
+        manta.TC(nantc,ii)=nanmean(manta.TC(:,ii));
+        nano2 = isnan(manta.O2satper(:,ii));
+        manta.O2satper(nano2,ii)=nanmean(manta.O2satper(:,ii));
+        nancond = isnan(manta.COND(:,ii));
+        manta.COND(nancond,ii)=nanmean(manta.COND(:,ii));
+        nanph = isnan(manta.pH(:,ii));
+        manta.pH(nanph,ii)=nanmean(manta.pH(:,ii));
+        nanorp = isnan(manta.ORP(:,ii));
+        manta.ORP(nanorp,ii)=nanmean(manta.ORP(:,ii));
+        
+        manta.PSAL = SP_from_C(manta.COND/10000, manta.TC, 10);
+        manta.DENS = sw_dens(manta.PSAL, manta.TC, 0)/1000;
+        
+        manta.DOXY(:,ii) = calcO2sat(manta.TC(:,ii),manta.PSAL(:,ii)).*manta.O2satper(:,ii)./100; 
+        
+        % low pass filter oxygen data
+        %*****smooth data with a low pass filter*****
+        n = 5; % filter order
+        period = 40;% cutoff period. when 1/period = 1, it is half of the sampling rate (butter)
+                    % so that means period = sensors is one hour. 30 hours = 180.
+        Wn = 1/(period); % cutoff frequency
+        [b,a] = butter(n,Wn);
+        
+        
+        manta.DOXY_lpf(:,ii) = filtfilt(b, a, manta.DOXY(:,ii));
+        manta.pH_lpf(:,ii) = filtfilt(b, a, manta.pH(:,ii));
+        manta.ORP_lpf(:,ii) = filtfilt(b, a, manta.ORP(:,ii));
+        manta.TC_lpf(:,ii) = filtfilt(b, a, manta.TC(:,ii));
+        manta.VpH_lpf(:,ii) = filtfilt(b, a, manta.VpH(:,ii));
+        manta.COND_lpf(:,ii) = filtfilt(b, a, manta.COND(:,ii));
+        manta.PSAL_lpf(:,ii) = filtfilt(b, a, manta.PSAL(:,ii));
+        manta.DENS_lpf(:,ii) = filtfilt(b, a, manta.DENS(:,ii));
+        
+        % take derivative.
+        manta.dDOXY_lpf(:,ii) = diff(manta.DOXY_lpf(:,ii));
+        manta.dpH_lpf(:,ii) = diff(manta.pH_lpf(:,ii));
+        manta.dORP_lpf(:,ii) = diff(manta.ORP_lpf(:,ii));
+        manta.dTC_lpf(:,ii) = diff(manta.TC_lpf(:,ii));
+        manta.dVpH_lpf(:,ii) = diff(manta.VpH_lpf(:,ii));
+        manta.dCOND_lpf(:,ii) = diff(manta.COND_lpf(:,ii));
+        manta.dPSAL_lpf(:,ii) = diff(manta.PSAL_lpf(:,ii));
+        manta.dDENS_lpf(:,ii) = diff(manta.DENS_lpf(:,ii));
+%         
+%         % record local maxima and minima of lpf and derivative datasets.
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.DOXY_lpf(:,ii), manta.SDN, nanlength);
+%         DOXYmax(:,ii)=varmax;
+%         DOXYmax_locs(:,ii)=max_locs;
+%         DOXYmin(:,ii)=varmin;
+%         DOXYmin_locs(:,ii)=min_locs;        
+%         DOXYmeans(:,ii) = mean(manta.DOXY(:,ii));
+%         DOXYstdevs(:,ii) = std(manta.DOXY(:,ii));
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.dDOXY_lpf(:,ii), manta.SDN, nanlength);
+%         dDOXYmax(:,ii)=varmax;
+%         dDOXYmax_locs(:,ii)=max_locs;
+%         dDOXYmin(:,ii)=varmin;
+%         dDOXYmin_locs(:,ii)=min_locs; 
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.pH_lpf(:,ii), manta.SDN, nanlength);
+%         pHmax(:,ii)=varmax;
+%         pHmax_locs(:,ii)=max_locs;
+%         pHmin(:,ii)=varmin;
+%         pHmin_locs(:,ii)=min_locs;        
+%         pHmeans(:,ii) = mean(manta.pH(:,ii));
+%         pHstdevs(:,ii) = std(manta.pH(:,ii));
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.dpH_lpf(:,ii), manta.SDN, nanlength);
+%         dpHmax(:,ii)=varmax;
+%         dpHmax_locs(:,ii)=max_locs;
+%         dpHmin(:,ii)=varmin;
+%         dpHmin_locs(:,ii)=min_locs;
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.ORP_lpf(:,ii), manta.SDN, nanlength);
+%         ORPmax(:,ii)=varmax;
+%         ORPmax_locs(:,ii)=max_locs;
+%         ORPmin(:,ii)=varmin;
+%         ORPmin_locs(:,ii)=min_locs;        
+%         ORPmeans(:,ii) = mean(manta.ORP(:,ii));
+%         ORPstdevs(:,ii) = std(manta.ORP(:,ii));
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.dORP_lpf(:,ii), manta.SDN, nanlength);
+%         dORPmax(:,ii)=varmax;
+%         dORPmax_locs(:,ii)=max_locs;
+%         dORPmin(:,ii)=varmin;
+%         dORPmin_locs(:,ii)=min_locs;
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.TC_lpf(:,ii), manta.SDN, nanlength);
+%         TCmax(:,ii)=varmax;
+%         TCmax_locs(:,ii)=max_locs;
+%         TCmin(:,ii)=varmin;
+%         TCmin_locs(:,ii)=min_locs;        
+%         TCmeans(:,ii) = mean(manta.TC(:,ii));
+%         TCstdevs(:,ii) = std(manta.TC(:,ii));
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.dTC_lpf(:,ii), manta.SDN, nanlength);
+%         dTCmax(:,ii)=varmax;
+%         dTCmax_locs(:,ii)=max_locs;
+%         dTCmin(:,ii)=varmin;
+%         dTCmin_locs(:,ii)=min_locs;
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.VpH_lpf(:,ii), manta.SDN, nanlength);
+%         VpHmax(:,ii)=varmax;
+%         VpHmax_locs(:,ii)=max_locs;
+%         VpHmin(:,ii)=varmin;
+%         VpHmin_locs(:,ii)=min_locs;        
+%         VpHmeans(:,ii) = mean(manta.VpH(:,ii));
+%         VpHstdevs(:,ii) = std(manta.VpH(:,ii));
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.dVpH_lpf(:,ii), manta.SDN, nanlength);
+%         dVpHmax(:,ii)=varmax;
+%         dVpHmax_locs(:,ii)=max_locs;
+%         dVpHmin(:,ii)=varmin;
+%         dVpHmin_locs(:,ii)=min_locs;
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.COND_lpf(:,ii), manta.SDN, nanlength);
+%         CONDmax(:,ii)=varmax;
+%         CONDmax_locs(:,ii)=max_locs;
+%         CONDmin(:,ii)=varmin;
+%         CONDmin_locs(:,ii)=min_locs;        
+%         CONDmeans(:,ii) = mean(manta.COND(:,ii));
+%         CONDstdevs(:,ii) = std(manta.COND(:,ii));
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.dCOND_lpf(:,ii), manta.SDN, nanlength);
+%         dCONDmax(:,ii)=varmax;
+%         dCONDmax_locs(:,ii)=max_locs;
+%         dCONDmin(:,ii)=varmin;
+%         dCONDmin_locs(:,ii)=min_locs;
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.PSAL_lpf(:,ii), manta.SDN, nanlength);
+%         PSALmax(:,ii)=varmax;
+%         PSALmax_locs(:,ii)=max_locs;
+%         PSALmin(:,ii)=varmin;
+%         PSALmin_locs(:,ii)=min_locs;        
+%         PSALmeans(:,ii) = mean(manta.PSAL(:,ii));
+%         PSALstdevs(:,ii) = std(manta.PSAL(:,ii));
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.dPSAL_lpf(:,ii), manta.SDN, nanlength);
+%         dPSALmax(:,ii)=varmax;
+%         dPSALmax_locs(:,ii)=max_locs;
+%         dPSALmin(:,ii)=varmin;
+%         dPSALmin_locs(:,ii)=min_locs;
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.DENS_lpf(:,ii), manta.SDN, nanlength);
+%         DENSmax(:,ii)=varmax;
+%         DENSmax_locs(:,ii)=max_locs;
+%         DENSmin(:,ii)=varmin;
+%         DENSmin_locs(:,ii)=min_locs;        
+%         DENSmeans(:,ii) = mean(manta.DENS(:,ii));
+%         DENSstdevs(:,ii) = std(manta.DENS(:,ii));
+%         
+%         [ varmax, max_locs, varmin, min_locs ]...
+%             = extract_peaks( manta.dDENS_lpf(:,ii), manta.SDN, nanlength);
+%         dDENSmax(:,ii)=varmax;
+%         dDENSmax_locs(:,ii)=max_locs;
+%         dDENSmin(:,ii)=varmin;
+%         dDENSmin_locs(:,ii)=min_locs;
+% 
+    end
+%     
+%     peaks.(island_name).('DOXYmax') = (DOXYmax);
+%     peaks.(island_name).('DOXYmin') = (DOXYmin);
+%     peaks.(island_name).('dDOXYmax') = (dDOXYmax);
+%     peaks.(island_name).('dDOXYmin') = (dDOXYmin);
+%     peaks.(island_name).('DOXYmax_locs') = (DOXYmax_locs);
+%     peaks.(island_name).('DOXYmin_locs') = (DOXYmin_locs);
+%     peaks.(island_name).('dDOXYmax_locs') = (dDOXYmax_locs);
+%     peaks.(island_name).('dDOXYmin_locs') = (dDOXYmin_locs);
+%     peaks.(island_name).('DOXYmeans') = (DOXYmeans);
+%     peaks.(island_name).('DOXYstdevs') = (DOXYstdevs);
+%     
+%     peaks.(island_name).('pHmax') = (pHmax);
+%     peaks.(island_name).('pHmin') = (pHmin);
+%     peaks.(island_name).('dpHmax') = (dpHmax);
+%     peaks.(island_name).('dpHmin') = (dpHmin);
+%     peaks.(island_name).('pHmax_locs') = (pHmax_locs);
+%     peaks.(island_name).('pHmin_locs') = (pHmin_locs);
+%     peaks.(island_name).('dpHmax_locs') = (dpHmax_locs);
+%     peaks.(island_name).('dpHmin_locs') = (dpHmin_locs);
+%     peaks.(island_name).('pHmeans') = (pHmeans);
+%     peaks.(island_name).('pHstdevs') = (pHstdevs);
+%     
+%     peaks.(island_name).('ORPmax') = (ORPmax);
+%     peaks.(island_name).('ORPmin') = (ORPmin);
+%     peaks.(island_name).('dORPmax') = (dORPmax);
+%     peaks.(island_name).('dORPmin') = (dORPmin);
+%     peaks.(island_name).('ORPmax_locs') = (ORPmax_locs);
+%     peaks.(island_name).('ORPmin_locs') = (ORPmin_locs);
+%     peaks.(island_name).('dORPmax_locs') = (dORPmax_locs);
+%     peaks.(island_name).('dORPmin_locs') = (dORPmin_locs);
+%     peaks.(island_name).('ORPmeans') = (ORPmeans);
+%     peaks.(island_name).('ORPstdevs') = (ORPstdevs);
+%     
+%     peaks.(island_name).('TCmax') = (TCmax);
+%     peaks.(island_name).('TCmin') = (TCmin);
+%     peaks.(island_name).('dTCmax') = (dTCmax);
+%     peaks.(island_name).('dTCmin') = (dTCmin);
+%     peaks.(island_name).('TCmax_locs') = (TCmax_locs);
+%     peaks.(island_name).('TCmin_locs') = (TCmin_locs);
+%     peaks.(island_name).('dTCmax_locs') = (dTCmax_locs);
+%     peaks.(island_name).('dTCmin_locs') = (dTCmin_locs);
+%     peaks.(island_name).('TCmeans') = (TCmeans);
+%     peaks.(island_name).('TCstdevs') = (TCstdevs);
+%     
+%     peaks.(island_name).('VpHmax') = (VpHmax);
+%     peaks.(island_name).('VpHmin') = (VpHmin);
+%     peaks.(island_name).('dVpHmax') = (dVpHmax);
+%     peaks.(island_name).('dVpHmin') = (dVpHmin);
+%     peaks.(island_name).('VpHmax_locs') = (VpHmax_locs);
+%     peaks.(island_name).('VpHmin_locs') = (VpHmin_locs);
+%     peaks.(island_name).('dVpHmax_locs') = (dVpHmax_locs);
+%     peaks.(island_name).('dVpHmin_locs') = (dVpHmin_locs);
+%     peaks.(island_name).('VpHmeans') = (VpHmeans);
+%     peaks.(island_name).('VpHstdevs') = (VpHstdevs);
+%     
+%     peaks.(island_name).('CONDmax') = (CONDmax);
+%     peaks.(island_name).('CONDmin') = (CONDmin);
+%     peaks.(island_name).('dCONDmax') = (dCONDmax);
+%     peaks.(island_name).('dCONDmin') = (dCONDmin);
+%     peaks.(island_name).('CONDmax_locs') = (CONDmax_locs);
+%     peaks.(island_name).('CONDmin_locs') = (CONDmin_locs);
+%     peaks.(island_name).('dCONDmax_locs') = (dCONDmax_locs);
+%     peaks.(island_name).('dCONDmin_locs') = (dCONDmin_locs);
+%     peaks.(island_name).('CONDmeans') = (CONDmeans);
+%     peaks.(island_name).('CONDstdevs') = (CONDstdevs);
+%     
+%     peaks.(island_name).('PSALmax') = (PSALmax);
+%     peaks.(island_name).('PSALmin') = (PSALmin);
+%     peaks.(island_name).('dPSALmax') = (dPSALmax);
+%     peaks.(island_name).('dPSALmin') = (dPSALmin);
+%     peaks.(island_name).('PSALmax_locs') = (PSALmax_locs);
+%     peaks.(island_name).('PSALmin_locs') = (PSALmin_locs);
+%     peaks.(island_name).('dPSALmax_locs') = (dPSALmax_locs);
+%     peaks.(island_name).('dPSALmin_locs') = (dPSALmin_locs);
+%     peaks.(island_name).('PSALmeans') = (PSALmeans);
+%     peaks.(island_name).('PSALstdevs') = (PSALstdevs);
+%     
+%     peaks.(island_name).('DENSmax') = (DENSmax);
+%     peaks.(island_name).('DENSmin') = (DENSmin);
+%     peaks.(island_name).('dDENSmax') = (dDENSmax);
+%     peaks.(island_name).('dDENSmin') = (dDENSmin);
+%     peaks.(island_name).('DENSmax_locs') = (DENSmax_locs);
+%     peaks.(island_name).('DENSmin_locs') = (DENSmin_locs);
+%     peaks.(island_name).('dDENSmax_locs') = (dDENSmax_locs);
+%     peaks.(island_name).('dDENSmin_locs') = (dDENSmin_locs);
+%     peaks.(island_name).('DENSmeans') = (DENSmeans);
+%     peaks.(island_name).('DENSstdevs') = (DENSstdevs);
+
+    plotvar = 'dDOXY_lpf';
+    
+    fsize = 10;
+    lwidth = 2;
+
+
+    f1 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+    hold on
+    plot(manta.SDN(2:end), manta.(plotvar)(:,1:sensors), 'linewidth', lwidth);
+%     plot(dDOXYmax_locs(:), dDOXYmax(:),'rv','MarkerFaceColor','r');
+%     plot(dDOXYmin_locs(:), dDOXYmin(:),'rs','MarkerFaceColor','b');
+    title(island_name, 'fontsize', fsize);
+    ylabel('Derivative LPF Oxygen [\mumol kg^-^1 min^-^1]', 'fontsize', fsize);
+%     ylim([150 220]);
+%     ylim([-2.0 2.0]);
+    datetick('x', 'mm-dd HH:MM');
+    legend(manta.SENS_ID);
+    set(gca, 'fontsize', fsize, 'XTickLabelRotation', 45);
+    
+    plotname = [island_name,'_',plotvar,'.eps'];
+    saveas(f1, plotname, 'epsc');
+    
+    plotvar = 'DOXY_lpf';
+    
+    f2 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+    hold on
+    plot(manta.SDN(1:end), manta.(plotvar)(:,1:sensors), 'linewidth', lwidth);
+%     plot(DOXYmax_locs(:), DOXYmax(:),'rv','MarkerFaceColor','r');
+%     plot(DOXYmin_locs(:), DOXYmin(:),'rs','MarkerFaceColor','b');
+    title(island_name, 'fontsize', fsize);
+    ylabel('LPF Oxygen [\mumol kg^-^1 min^-^1]', 'fontsize', fsize);
+%     ylim([150 220]);
+%     ylim([-2.0 2.0]);
+    datetick('x', 'mm-dd HH:MM');
+    legend(manta.SENS_ID);
+    set(gca, 'fontsize', fsize, 'XTickLabelRotation', 45);
+    
+    plotname = [island_name,'_',plotvar,'.eps'];
+    saveas(f2, plotname, 'epsc');
+    
+    plotvar = 'VpH_lpf';
+    
+    f3 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+    hold on
+    plot(manta.SDN(1:end), manta.(plotvar)(:,1:sensors), 'linewidth', lwidth);
+%     plot(VpHmax_locs(:), VpHmax(:),'rv','MarkerFaceColor','r');
+%     plot(VpHmin_locs(:), VpHmin(:),'rs','MarkerFaceColor','b');
+    title(island_name, 'fontsize', fsize);
+    ylabel('LPF VpH', 'fontsize', fsize);
+%     ylim([150 220]);
+    %ylim([-2.0 2.0]);
+    datetick('x', 'mm-dd HH:MM');
+    legend(manta.SENS_ID);
+    set(gca, 'fontsize', fsize, 'XTickLabelRotation', 45);
+    
+    plotname = [island_name,'_',plotvar,'.eps'];
+    saveas(f3, plotname, 'epsc');
+    
+    plotvar = 'pH_lpf';
+    
+    f4 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+    hold on
+    plot(manta.SDN(1:end), manta.(plotvar)(:,1:sensors), 'linewidth', lwidth);
+%     plot(pHmax_locs(:), pHmax(:),'rv','MarkerFaceColor','r');
+%     plot(pHmin_locs(:), pHmin(:),'rs','MarkerFaceColor','b');
+    title(island_name, 'fontsize', fsize);
+    ylabel('LPF pH', 'fontsize', fsize);
+%     ylim([150 220]);
+%     ylim([-2.0 2.0]);
+    datetick('x', 'mm-dd HH:MM');
+    legend(manta.SENS_ID);
+    set(gca, 'fontsize', fsize, 'XTickLabelRotation', 45);
+    
+    plotname = [island_name,'_',plotvar,'.eps'];
+    saveas(f4, plotname, 'epsc');
+    
+    plotvar = 'ORP_lpf';
+    
+    f5 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+    hold on
+    plot(manta.SDN(1:end), manta.(plotvar)(:,1:sensors), 'linewidth', lwidth);
+%     plot(ORPmax_locs(:), ORPmax(:),'rv','MarkerFaceColor','r');
+%     plot(ORPmin_locs(:), ORPmin(:),'rs','MarkerFaceColor','b');
+    title(island_name, 'fontsize', fsize);
+    ylabel('LPF ORP', 'fontsize', fsize);
+%     ylim([150 220]);
+%     ylim([-2.0 2.0]);
+    datetick('x', 'mm-dd HH:MM');
+    legend(manta.SENS_ID);
+    set(gca, 'fontsize', fsize, 'XTickLabelRotation', 45);
+    
+    plotname = [island_name,'_',plotvar,'.eps'];
+    saveas(f5, plotname, 'epsc');
+    
+    plotvar = 'PSAL_lpf';
+    
+    f5 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+    hold on
+    plot(manta.SDN(1:end), manta.(plotvar)(:,1:sensors), 'linewidth', lwidth);
+%     plot(PSALmax_locs(:), PSALmax(:),'rv','MarkerFaceColor','r');
+%     plot(PSALmin_locs(:), PSALmin(:),'rs','MarkerFaceColor','b');
+    title(island_name, 'fontsize', fsize);
+    ylabel('LPF Salinity', 'fontsize', fsize);
+%     ylim([150 220]);
+%     ylim([-2.0 2.0]);
+    datetick('x', 'mm-dd HH:MM');
+    legend(manta.SENS_ID);
+    set(gca, 'fontsize', fsize, 'XTickLabelRotation', 45);
+    
+    plotname = [island_name,'_',plotvar,'.eps'];
+    saveas(f5, plotname, 'epsc');
+    
+    plotvar = 'COND_lpf';
+    
+    fsensors = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+    hold on
+    plot(manta.SDN(1:end), manta.(plotvar)(:,1:sensors), 'linewidth', lwidth);
+%     plot(CONDmax_locs(:), CONDmax(:),'rv','MarkerFaceColor','r');
+%     plot(CONDmin_locs(:), CONDmin(:),'rs','MarkerFaceColor','b');
+    title(island_name, 'fontsize', fsize);
+    ylabel('LPF Conductivity', 'fontsize', fsize);
+%     ylim([150 220]);
+%     ylim([-2.0 2.0]);
+    datetick('x', 'mm-dd HH:MM');
+    legend(manta.SENS_ID);
+    set(gca, 'fontsize', fsize, 'XTickLabelRotation', 45);
+    
+    plotname = [island_name,'_',plotvar,'.eps'];
+    saveas(fsensors, plotname, 'epsc');
+    
+    plotvar = 'TC_lpf';
+    
+    fsensors = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+    hold on
+    plot(manta.SDN(1:end), manta.(plotvar)(:,1:sensors), 'linewidth', lwidth);
+%     plot(TCmax_locs(:), TCmax(:),'rv','MarkerFaceColor','r');
+%     plot(TCmin_locs(:), TCmin(:),'rs','MarkerFaceColor','b');
+    title(island_name, 'fontsize', fsize);
+    ylabel('LPF Temperature', 'fontsize', fsize);
+%     ylim([26 28]);
+%     ylim([-2.0 2.0]);
+    datetick('x', 'mm-dd HH:MM');
+    legend(manta.SENS_ID);
+    set(gca, 'fontsize', fsize, 'XTickLabelRotation', 45);
+    
+    plotname = [island_name,'_',plotvar,'.eps'];
+    saveas(fsensors, plotname, 'epsc');
+    
+    plotvar = 'DENS_lpf';
+    
+    fsensors = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+    hold on
+    plot(manta.SDN(1:end), manta.(plotvar)(:,1:sensors), 'linewidth', lwidth);
+%     plot(DENSmax_locs(:), DENSmax(:),'rv','MarkerFaceColor','r');
+%     plot(DENSmin_locs(:), DENSmin(:),'rs','MarkerFaceColor','b');
+    title(island_name, 'fontsize', fsize);
+    ylabel('LPF Density', 'fontsize', fsize);
+%     ylim([150 220]);
+%     ylim([-2.0 2.0]);
+    datetick('x', 'mm-dd HH:MM');
+    legend(manta.SENS_ID);
+    set(gca, 'fontsize', fsize, 'XTickLabelRotation', 45);
+    
+    plotname = [island_name,'_',plotvar,'.eps'];
+    saveas(fsensors, plotname, 'epsc');
+
+    f_name = [island_name,'.mat'];
+    
+    baselineDO = mean(manta.DOXY);
+    
+    save(f_name, 'manta', 'island_name', 'baselinesat', 'baselineDO');
+    close all
+    
+    
+    clearvars -except folder txtfiles
+    
+    
+end
+
+% save('peaks.mat','peaks');
+
+
+
+
+

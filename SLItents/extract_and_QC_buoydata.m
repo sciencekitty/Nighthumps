@@ -1,6 +1,6 @@
 % extract_and_QC_weatherdata.m
 
-clear all
+clearvars
 close all
 
 % folder path where text files are kept
@@ -19,11 +19,12 @@ for i = 1:size(txtfiles,1)
     island_name = island_name(1:end-4);
     
     trex = readtable([folder,txtfiles{i}],'Delimiter','tab');
-    buoy.SDN = datetime(trex.SDN,'InputFormat','yyyy-MM-dd HH:mm');
-    buoy.Pres300 = trex.PRES300;
-    buoy.Pres500 = trex.PRES500;
-    buoy.Rain = trex.RAIN;
-    buoy.Wind = trex.WSPD;
+    [SDN,idx] = unique(datetime(trex.SDN,'InputFormat','yyyy-MM-dd HH:mm'));
+    buoy.SDN = SDN;
+    buoy.Pres300 = trex.PRES300(idx,1);
+    buoy.Pres500 = trex.PRES500(idx,1);
+    buoy.Rain = trex.RAIN(idx,1);
+    buoy.Wind = trex.WSPD(idx,1);
 
     f_name = [island_name,'_buoy.mat'];
     save(f_name, 'buoy', 'island_name');

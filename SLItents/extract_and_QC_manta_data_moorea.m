@@ -11,7 +11,7 @@ clear all
 close all
 
 % folder path where text files are kept
-folder = '/Users/sandicalhoun/Nighthumps/SLItents/raw_tent_text_files/';
+folder = '/Users/Sandi/Documents/Nighthumps/SLItents/raw_tent_text_files/';
 % list of text file names for manta data
 txtfiles = {'Moorea_9_1_11.txt'
     'Moorea_9_5_11.txt'
@@ -26,18 +26,10 @@ for i = 1:length(txtfiles)
     island_name = txtfiles{i};
     island_name = island_name(1:end-4);
     switch txtfiles{i}
-        case 'Moorea_9_1_11.txt'
-            daterange = [datenum(2011,9,2,11,50,0) datenum(2011,9,4,15,25,0)];
-        case 'Moorea_9_5_11.txt'
-            daterange = [datenum(2011,9,5,11,55,0) datenum(2011,9,7,11,35,0)];
-        case 'Moorea_9_8_11.txt'
-            daterange = [datenum(2011,9,8,15,5,0) datenum(2011,9,11,16,15,0)];
-        case 'Moorea_9_12_11.txt'
-            daterange = [datenum(2011,9,12,18,45,0) datenum(2011,9,13,20,30,0)];
-        case 'Moorea_9_14_11.txt'
-            daterange = [datenum(2011,9,14,16,55,0) datenum(2011,9,16,17,50,0)];
-        case 'Moorea_9_17_11.txt'
-            daterange = [datenum(2011,9,17,13,55,0) datenum(2011,9,20,11,05,0)];
+        case 'Birch-8-8-14.txt'
+            daterange = [datenum(2014,8,8,14,10,0) datenum(2014,8,11,14,35,0)];
+        case 'Birch-8-15-14.txt'
+            daterange = [datenum(2014,8,15,14,35,0) datenum(2014,9,7,11,35,0)];
     end
     
     [trex,~,sensors] = manta2mat([folder,txtfiles{i}]);
@@ -85,16 +77,6 @@ for i = 1:length(txtfiles)
     trex.COND = bsxfun(@plus,trex.COND,adj);
     baselinecond=nanmean(trex.COND,1);
     
-    % Calculate salinity from conductivity [uS/cm].
-    trex.PSAL = SP_from_C(trex.COND/10000, trex.TC, 10);
-    % this salinity is kind of unreliable... big spread, and will introduce
-    % error into density calculation... maybe just assume constant
-    % salinity?
-    
-    %trex.PSAL(:) = 34.5; % Arbitrarily chose 34.5. Should adjust to salinity 
-    % derived from discrete samples at each site later.
-    
-    trex.DENS = sw_dens(trex.PSAL, trex.TC, 0)/1000;
     
     % Make 20th O2satper 100%, arbitrarily.
 %     O2per_offset = 100 - trex.O2satper(20,:);
@@ -190,24 +172,15 @@ for i = 1:length(txtfiles)
 %     dDENSmin_locs = NaN(nanlength,sensors);
 %     DENSmeans = zeros(1,sensors);
 %     DENSstdevs = zeros(1,sensors);
-        
-    for ii = 1:sensors
-        %trex.O2satper(:,ii) = trex.O2satper(:,ii) + O2per_offset(ii);
-        trex.DOXY(:,ii) = calcO2sat(trex.TC(:,ii),trex.PSAL(:,ii)).*trex.O2satper(:,ii)./100;   
-    end
     
     % interpolate onto 5min intervals
     
     manta.SDN = [daterange(1):datenum(0,0,0,0,5,0):daterange(end)]';
+    COND = nanmean(trex.COND,2);
+    for ii = 1:sensors, trex.COND(:,ii) = COND; end
      
     for ii = 1:sensors
         iuse = inrange(trex.SDN(:,ii), [manta.SDN(1) manta.SDN(end)]);
-        manta.TC(:,ii) = interp1(trex.SDN(iuse,ii), trex.TC(iuse,ii), manta.SDN);
-        manta.PSAL(:,ii) = interp1(trex.SDN(iuse,ii), trex.PSAL(iuse,ii), manta.SDN);
-        manta.DENS(:,ii) = interp1(trex.SDN(iuse,ii), trex.DENS(iuse,ii), manta.SDN);
-        manta.pH(:,ii) = interp1(trex.SDN(iuse,ii), trex.pH(iuse,ii), manta.SDN);
-        manta.ORP(:,ii) = interp1(trex.SDN(iuse,ii), trex.ORP(iuse,ii), manta.SDN);
-        manta.COVER(:,ii)= interp1(trex.SDN(iuse,ii), trex.COVER(iuse,ii), manta.SDN);
         
         % look for non-NaN data
         inonanO = ~isnan(trex.DOXY(:,ii));
@@ -216,10 +189,9 @@ for i = 1:length(txtfiles)
         inonanTC = ~isnan(trex.TC(:,ii));
         inonanVpH = ~isnan(trex.VpH(:,ii));
         inonanCOND = ~isnan(trex.COND(:,ii));
-        inonanPSAL = ~isnan(trex.PSAL(:,ii));
-        inonanDENS = ~isnan(trex.DENS(:,ii));
+
         
-        totiuse = iuse&inonanO&inonanpH&inonanOrp&inonanTC&inonanVpH&inonanCOND&inonanPSAL&inonanDENS;
+        totiuse = iuse&inonanO&inonanpH&inonanOrp&inonanTC&inonanVpH&inonanCOND;
         
         manta.DOXY(:,ii) = interp1(trex.SDN(totiuse,ii),trex.DOXY(totiuse,ii), manta.SDN);
         manta.O2satper(:,ii) = interp1(trex.SDN(totiuse,ii),trex.O2satper(totiuse,ii), manta.SDN);
@@ -228,9 +200,13 @@ for i = 1:length(txtfiles)
         manta.TC(:,ii) = interp1(trex.SDN(totiuse,ii),trex.TC(totiuse,ii), manta.SDN);
         manta.VpH(:,ii) = interp1(trex.SDN(totiuse,ii),trex.VpH(totiuse,ii), manta.SDN);
         manta.COND(:,ii) = interp1(trex.SDN(totiuse,ii),trex.COND(totiuse,ii), manta.SDN);
-        manta.PSAL(:,ii) = interp1(trex.SDN(totiuse,ii),trex.PSAL(totiuse,ii), manta.SDN);
-        manta.DENS(:,ii) = interp1(trex.SDN(totiuse,ii),trex.DENS(totiuse,ii), manta.SDN);
         manta.COVER(:,ii) = interp1(trex.SDN(totiuse,ii),trex.COVER(totiuse,ii), manta.SDN);
+        
+                % Calculate salinity from conductivity [uS/cm].
+        manta.PSAL = SP_from_C(manta.COND/10000, manta.TC, 10);
+        manta.DENS = sw_dens(manta.PSAL, manta.TC, 0)/1000;
+        
+        manta.DOXY(:,ii) = calcO2sat(manta.TC(:,ii),manta.PSAL(:,ii)).*manta.O2satper(:,ii)./100; 
         
         switch manta.COVER(1,ii)
             case 1
@@ -630,7 +606,7 @@ for i = 1:length(txtfiles)
 %     plot(TCmin_locs(:), TCmin(:),'rs','MarkerFaceColor','b');
     title(island_name, 'fontsize', fsize);
     ylabel('LPF Temperature', 'fontsize', fsize);
-%     ylim([150 220]);
+    ylim([26 28]);
 %     ylim([-2.0 2.0]);
     datetick('x', 'HH:MM');
     legend('1', '2', '3', '4', '5');

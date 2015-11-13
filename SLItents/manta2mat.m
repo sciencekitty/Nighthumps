@@ -1,4 +1,4 @@
-function [manta, vars,ncol] = manta2mat(filepath, daterange)
+function [manta,vars,ncol] = manta2mat(filepath, daterange)
 
 % [manta, vars] = manta2mat(filepath)
 % 
@@ -17,7 +17,7 @@ function [manta, vars,ncol] = manta2mat(filepath, daterange)
 % Author: Yui Takeshita
 % Scripps Insitution of Oceanography
 % Created: 5/29/2014
-% 
+% Modified: 10/30/2015 by Sandi Calhoun
 
 % get file id (fid)
 fid = fopen(filepath);
@@ -27,12 +27,8 @@ headers = fgetl(fid);
 headers = textscan(headers, '%s', 'delimiter', '\t'); 
 headers = headers{:};
 
-% create dataformat for textscan for rest of data
-dataformat = ['%f%s']; %first two columns are sensorID and SDN
-for i = 1:length(headers)-2; dataformat = [dataformat,'%f']; end
-
 % extract data
-trex = textscan(fid, dataformat, 'delimiter', '\t', 'collectoutput', 1);
+trex = readtable(filepath, 'Delimiter', 'tab');
 
 % close file ID
 fclose(fid); 
@@ -42,27 +38,29 @@ fclose(fid);
 % Get information needed for presizing matrix and extracting data
 
 % extract sensor ID
-sID = trex{1}; 
-ncol = length(unique(sID)); %number of columns in data matrix
+sID = trex.SENS_ID;
+[~,idx]=unique(sID);
+ncol = length(idx); %number of columns in data matrix
 % vector of indicies for start of new sensor ID. last one is one larger
 % than the length of the  sensorID vector.
-inewsens = [1; find(diff(sID)~=0)+1; length(sID)+1]; 
+inewsens = [sort(idx);length(sID)+1]; 
 dinewsens = diff(inewsens); % take difference of this matrix for parsing.
 nrow = max(diff(inewsens));
 
-SDN = datenum(trex{2}); % get SDN in matlab form
-data = trex{3}; % get data matrix
+trex.SDN = datenum(trex.SDN); % get SDN in matlab form
 
-% insert sensorID and SDN into data matrix
-data = [sID'; SDN'; data']';
 
 % Start extracting data. 
 for i = 1:length(headers)
     % presize matrix
-    manta.(headers{i}) = NaN(nrow, ncol);
+    if i==1
+        manta.(headers{i}) = cell(nrow,ncol);
+    else
+        manta.(headers{i}) = NaN(nrow,ncol);
+    end
     % start parsing
     for ii = 1:length(inewsens)-1
-        manta.(headers{i})(1:dinewsens(ii),ii) = data(inewsens(ii):inewsens(ii+1)-1,i);
+        manta.(headers{i})(1:dinewsens(ii),ii) = trex.(headers{i})(inewsens(ii):inewsens(ii+1)-1,1);
     end 
 end
 

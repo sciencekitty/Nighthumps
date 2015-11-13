@@ -11,7 +11,7 @@ clear all
 close all
 
 % folder path where text files are kept
-folder = '/Users/sandicalhoun/Nighthumps/SLItents/raw_tent_text_files/';
+folder = '/Users/Sandi/Documents/Nighthumps/SLItents/raw_tent_text_files/';
 % list of text file names for manta data
 txtfiles = {'Carmabi052515.txt'
     'Carmabi051715.txt'
@@ -22,7 +22,11 @@ txtfiles = {'Carmabi052515.txt'
     'WaterFactory041415.txt'
     'CCA061615.txt'
     'CuracaoTank117.txt'
-    'CuracaoTank316.txt'};
+    'CuracaoTank316.txt'
+    'CuracaoTank44.txt'
+    'CuracaoTank34.txt'
+    'CuracaoTank513.txt'
+    'CuracaoTank314.txt'};
 
 % Trimmed the first 2 hours off the start and end of each dataset to reduce
 % variability
@@ -50,6 +54,14 @@ for i = 1:length(txtfiles)
             daterange = [datenum(2015,5,23,21,52,0) datenum(2015,5,24,12,14,0)];
         case 'CuracaoTank316.txt'
             daterange = [datenum(2015,5,10,16,22,0) datenum(2015,5,11,3,30,0)];
+        case 'CuracaoTank44.txt'
+            daterange = [datenum(2015,4,28,16,59,0) datenum(2015,4,29,7,44,0)];
+        case 'CuracaoTank34.txt'
+            daterange = [datenum(2015,4,28,15,15,0) datenum(2015,4,29,8,15,0)];
+        case 'CuracaoTank513.txt'
+            daterange = [datenum(2015,5,7,14,57,0) datenum(2015,5,8,1,18,0)];
+        case 'CuracaoTank314.txt'
+            daterange = [datenum(2015,5,8,17,30,0) datenum(2015,5,9,7,50,0)];
     end
     
     trex = manta2mat([folder,txtfiles{i}]);
@@ -65,7 +77,7 @@ for i = 1:length(txtfiles)
     trex.VpH(trex.VpH == 0) = NaN;
     trex.COND(trex.COND == 0) = NaN;
     
-    if strcmp(island_name,'CuracaoTank316')==1
+    if strcmp(island_name,'CuracaoTank316')==1 || strcmp(island_name,'CuracaoTank44')==1 || strcmp(island_name,'CuracaoTank513')==1
         trex.PSAL(1:length(trex.DOXY),1) = 34.5;
     else
         trex.PSAL = SP_from_C(trex.COND/10000, trex.TC, 10);
@@ -173,7 +185,7 @@ for i = 1:length(txtfiles)
     
     if strcmp(island_name,'WaterFactory050715')==1
         manta.SDN = [daterange(1):datenum(0,0,0,0,5,0):daterange(end)]';
-    elseif strcmp(island_name,'WaterFactory041415')==1
+    elseif strcmp(island_name,'WaterFactory041415')==1 || strcmp(island_name,'CuracaoTank44')==1 || strcmp(island_name,'CuracaoTank34')==1 
         manta.SDN = [daterange(1):datenum(0,0,0,0,15,0):daterange(end)]';
     else
         manta.SDN = [daterange(1):datenum(0,0,0,0,1,0):daterange(end)]';
@@ -197,7 +209,7 @@ for i = 1:length(txtfiles)
     inonanPSAL = ~isnan(trex.PSAL);
     inonanDENS = ~isnan(trex.DENS);
     
-    if strcmp(island_name,'CuracaoTank316')==1
+    if strcmp(island_name,'CuracaoTank316')==1 || strcmp(island_name,'CuracaoTank44')==1 || strcmp(island_name,'CuracaoTank513')==1
         totiuse = iuse&inonanO&inonanTC;
     else
         totiuse = iuse&inonanO&inonanpH&inonanOrp&inonanTC&inonanVpH&inonanCOND&inonanPSAL&inonanDENS;
@@ -474,6 +486,17 @@ set(gca, 'fontsize', fsize, 'XTickLabelRotation', 45);
 
 plotname = [island_name,'-DOXY.eps'];
 saveas(f1, plotname, 'epsc');
+
+f2 = figure('units', 'inch', 'position', [1 1 8 8], 'visible', 'off');
+hold on
+plot(manta.SDN, manta.TC_lpf, 'linewidth', lwidth);
+title(island_name, 'fontsize', fsize);
+ylabel('Temperature', 'fontsize', fsize);
+datetick('x', 'HH:MM');
+set(gca, 'fontsize', fsize, 'XTickLabelRotation', 45);
+
+plotname = [island_name,'-TC.eps'];
+saveas(f2, plotname, 'epsc');
 
 f_name = [island_name,'.mat'];
 

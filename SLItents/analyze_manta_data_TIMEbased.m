@@ -20,6 +20,17 @@ mantafiles = {'flint.mat'
     'palmyra.mat'
     'washington.mat'};
 % list of file names for PAR data
+parfiles = {'flint_PAR.mat'
+    'vostok_PAR.mat'
+    'malden_PAR.mat'
+    'millennium_PAR.mat'
+    'starbuck_PAR.mat'
+    'fanning_PAR.mat'
+    'jarvis_PAR.mat'
+    'kingman_PAR.mat'
+    'palmyra_PAR.mat'
+    'washington_PAR.mat'};
+
 analysisfiles = {'flint_analysis_PARbased.mat'
     'vostok_analysis_PARbased.mat'
     'malden_analysis_PARbased.mat'
@@ -42,14 +53,21 @@ vars={'DOXY'
 
 for i = 1:length(mantafiles)
     load(mantafiles{i});
+    load(parfiles{i});
     load(analysisfiles{i});
     
     % Interpolate variables onto PAR datetime scale. Leave this step out if
     % not using PAR to determine day and night times. Use
     % analysis.(vars{ii})=manta.(vars{ii}); instead
+   
     for ii = 1:length(vars)
         analysis2.(vars{ii})= manta.(vars{ii});
     end
+    
+    % Interoplate PAR onto manta datetime scale
+    analysis2.PAR=interp1(par.SDN, par.PAR, manta.SDN);
+    iuse=isnan(analysis2.PAR);
+    analysis2.PAR(iuse,:)=0;
     
     analysis2.SDN=manta.SDN;
     analysis2.hour=stripTime(manta.SDN);
@@ -64,6 +82,7 @@ for i = 1:length(mantafiles)
     % Isolate data between sunrise and sunset (daytime)
     iuse=inrange(analysis2.hour,[sunrise sunset]);
     analysis2.day.SDN=manta.SDN(iuse);
+    analysis2.day.PAR=analysis2.PAR(iuse);
     
     for ii = 1:length(vars)
         analysis2.day.(vars{ii})=analysis2.(vars{ii})(iuse,:);
@@ -156,22 +175,33 @@ for i = 1:length(mantafiles)
             var8=['rsqPAR_',vars{iii},daynum];
             
             % Daily values
-            DOXY=analysis2.day.DOXY(dayind(ii):dayind(ii+1),:);
+            PAR=analysis2.day.PAR(dayind(ii):dayind(ii+1),:);
             basename=[vars{iii},'base'];
             basevar=analysis2.day.(basename)(dayind(ii):dayind(ii+1),:);
             var=analysis2.day.(vars{iii})(dayind(ii):dayind(ii+1),:);
             
             % Max, min, and means
+            var0=['PARmax',daynum];
+            analysis2.day.(var0)=[max(PAR),NaN(1,5)]';
+            var0=['PARmin',daynum];
+            analysis2.day.(var0)=[min(PAR),NaN(1,5)]';
+            var0=['PARmean',daynum];
+            analysis2.day.(var0)=[mean(PAR),NaN(1,5)]';
+            var0=['PARstd',daynum];
+            analysis2.day.(var0)=[std(PAR),NaN(1,5)]';
+            
             analysis2.day.(var1)=max(var);
             analysis2.day.(var2)=min(var);
             analysis2.day.(var3)=mean(var);
             analysis2.day.(var4)=std(var);
 
             % Trapezoidal numerical integration
+            var0=['intPAR',daynum];
+            analysis2.day.(var0)=[trapz(analysis2.day.secs(dayind(ii):dayind(ii+1),1),PAR),...
+                NaN(1,5)]';
             analysis2.day.(var5)=trapz(analysis2.day.secs(dayind(ii):dayind(ii+1),:),basevar);
 
             % Integration ratios
-            var0=['intDOXY',daynum];
             analysis2.day.(var6)=analysis2.day.(var5)./analysis2.day.(var0)(1,1);
 
             % Linear regression
@@ -179,7 +209,7 @@ for i = 1:length(mantafiles)
             rsqs=zeros(1,6);
             for iv=1:6
                 y=var(:,iv);
-                x=DOXY(:,iv);
+                x=PAR(:,1);
                 p=polyfit(x,y,1);
                 slope=p(1,1);
                 yfit=polyval(p,x);
@@ -265,7 +295,7 @@ for i = 1:length(mantafiles)
     
     close all
     
-    clearvars -except folder mantafiles analysisfiles vars
+    clearvars -except folder mantafiles analysisfiles parfiles vars
     
     
 end
